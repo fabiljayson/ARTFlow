@@ -1,0 +1,33 @@
+# Dépendances
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+.next/
+out/
+playwright-report/
+test-results/
+
+# Base / volumes
+infrastructure/volumes/
+backend/media/
+
+# Divers
+.DS_Store
+*.log
