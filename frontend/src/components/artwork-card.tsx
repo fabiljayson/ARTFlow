@@ -13,7 +13,7 @@ export function ArtworkCard({ artwork }: { artwork: ArtworkSummary }) {
   return (
     <Link
       href={`/oeuvre/${artwork.slug}`}
-      className="group block overflow-hidden rounded-lg border border-border/25 bg-white/70 transition hover:border-primary/40 hover:shadow-sm"
+      className="group block overflow-hidden rounded-lg glass-card"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface-muted">
         <MediaImage
@@ -24,7 +24,7 @@ export function ArtworkCard({ artwork }: { artwork: ArtworkSummary }) {
           className="transition duration-300 group-hover:scale-[1.02]"
         />
         {soldOut ? (
-          <span className="absolute left-2 top-2 rounded-md bg-danger/90 px-2 py-0.5 text-xs font-semibold text-white">
+          <span className="absolute left-2 top-2 rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
             Épuisé
           </span>
         ) : null}
@@ -32,8 +32,8 @@ export function ArtworkCard({ artwork }: { artwork: ArtworkSummary }) {
 
       <div className="space-y-1 p-3">
         <p className="truncate text-sm font-semibold text-text">{artwork.title}</p>
-        <p className="truncate text-xs text-text/60">{artwork.artist_display_name}</p>
-        <PriceTag amount={artwork.price_xaf} className="text-sm" />
+        <p className="truncate text-xs text-text/70">{artwork.artist_display_name}</p>
+        <PriceTag amount={artwork.price_xaf} className="text-sm font-semibold text-primary-strong" />
       </div>
     </Link>
   );

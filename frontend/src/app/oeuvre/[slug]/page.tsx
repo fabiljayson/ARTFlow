@@ -41,8 +41,8 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <nav aria-label="Fil d'ariane" className="text-sm text-text/60">
-        <Link href="/catalogue" className="hover:text-primary">
+      <nav aria-label="Fil d'ariane" className="text-sm text-text/70">
+        <Link href="/catalogue" className="hover:text-primary-strong">
           Catalogue
         </Link>
         <span aria-hidden="true"> / </span>
@@ -53,12 +53,12 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
         <ArtworkGallery images={images} videos={videos} title={artwork.title} />
 
         <div>
-          <p className="text-sm text-text/60">{artwork.reference}</p>
+          <p className="text-sm text-text/70">{artwork.reference}</p>
           <h1 className="mt-1 text-3xl font-bold text-primary-strong">{artwork.title}</h1>
 
           <Link
             href={`/artistes/${artwork.artist_slug}`}
-            className="mt-2 inline-block text-sm text-primary hover:underline"
+            className="mt-2 inline-block text-sm text-primary-strong hover:underline"
           >
             {artwork.artist_display_name}
           </Link>
@@ -66,11 +66,11 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
           <div className="mt-4 flex items-baseline gap-3">
             <span className="text-2xl font-bold text-primary">{formatXAF(artwork.price_xaf)}</span>
             {soldOut ? (
-              <span className="rounded-md bg-danger/15 px-2 py-0.5 text-sm font-semibold text-danger">
+              <span className="rounded-full bg-danger/15 px-2 py-0.5 text-sm font-semibold ink-danger">
                 Épuisé
               </span>
             ) : (
-              <span className="text-sm text-success">
+              <span className="text-sm ink-success">
                 {artwork.stock_quantity} en stock
               </span>
             )}
@@ -80,47 +80,47 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
             {artwork.description}
           </p>
 
-          <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-text/60">
+          <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-text/70">
             Caractéristiques
           </h2>
           <dl className="mt-3 divide-y divide-border/20 border-y border-border/20 text-sm">
             {artwork.category_detail ? (
               <div className="flex justify-between py-2">
-                <dt className="text-text/60">Catégorie</dt>
+                <dt className="text-text/70">Catégorie</dt>
                 <dd className="font-medium">{artwork.category_detail.name_fr}</dd>
               </div>
             ) : null}
             {artwork.dimensions ? (
               <div className="flex justify-between py-2">
-                <dt className="text-text/60">Dimensions</dt>
+                <dt className="text-text/70">Dimensions</dt>
                 <dd className="font-medium">{artwork.dimensions}</dd>
               </div>
             ) : null}
             {artwork.materials ? (
               <div className="flex justify-between py-2">
-                <dt className="text-text/60">Matériaux</dt>
+                <dt className="text-text/70">Matériaux</dt>
                 <dd className="font-medium">{artwork.materials}</dd>
               </div>
             ) : null}
             {artwork.technique ? (
               <div className="flex justify-between py-2">
-                <dt className="text-text/60">Technique</dt>
+                <dt className="text-text/70">Technique</dt>
                 <dd className="font-medium">{artwork.technique}</dd>
               </div>
             ) : null}
             {artwork.year_created ? (
               <div className="flex justify-between py-2">
-                <dt className="text-text/60">Année</dt>
+                <dt className="text-text/70">Année</dt>
                 <dd className="font-medium">{artwork.year_created}</dd>
               </div>
             ) : null}
             <div className="flex justify-between py-2">
-              <dt className="text-text/60">Pièce unique</dt>
+              <dt className="text-text/70">Pièce unique</dt>
               <dd className="font-medium">{artwork.is_unique_piece ? "Oui" : "Non"}</dd>
             </div>
           </dl>
 
-          <p className="mt-6 rounded-md border border-border/30 bg-surface-muted/50 p-3 text-xs text-text/60">
+          <p className="mt-6 rounded-md border border-border/30 bg-surface-muted/50 p-3 text-xs text-text/75">
             L&apos;achat et la livraison arrivent en Phase D. Pour l&apos;instant, contactez
             l&apos;artiste via son profil.
           </p>

@@ -112,13 +112,13 @@ export default function RegisterPage() {
             onChange={update("password")}
             className="mt-1 w-full rounded-md border border-border/40 bg-white px-3 py-2"
           />
-          <span className="mt-1 block text-xs text-text/60">
+            <span className="mt-1 block text-xs text-text/70">
             8 caractères minimum — ni un mot courant, ni uniquement des chiffres.
           </span>
         </label>
 
         {error ? (
-          <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+          <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
             {error}
           </p>
         ) : null}

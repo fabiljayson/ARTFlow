@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
-/* ArtFlow design tokens — source: DESIGN.md (ambre Glassmorphism) */
+/* ArtFlow design tokens — source: DESIGN.md (Clay / Geist / Liquid Glass) */
 :root {
   /* Brand */
-  --color-primary: #a16207;
-  --color-primary-strong: #451a03;
-  --color-primary-soft: #fde68a;
-  --color-accent: #a16207;
+  --color-primary: #9b6f58;
+  --color-primary-strong: #5f4639;
+  --color-primary-soft: #e8ccb8;
+  --color-accent: #9b6f58;
 
   /* Surfaces */
-  --color-surface: #fef3c7;
-  --color-surface-muted: #fde68a;
+  --color-surface: #fff5e8;
+  --color-surface-muted: #f3dfcc;
 
   /* Text & Border */
-  --color-text: #1c0d02;
-  --color-border: #78350f;
+  --color-text: #3f2f2a;
+  --color-border: #7c5d4c;
 
   /* Feedback */
   --color-success: #16a34a;
   --color-warning: #d97706;
   --color-danger: #dc2626;
 
-  /* Typography */
-  --font-sans: "Roboto Condensed", "Arial Narrow", sans-serif;
+  /* Typography — Geist chargé par next/font (voir layout.tsx) */
+  --font-sans: var(--font-geist-sans, "Geist"), system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Spacing */
+  /* Spacing (échelle DESIGN.md : 4/8/12/16/24/32/48) */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
@@ -34,15 +34,10 @@
   --space-2xl: 32px;
   --space-section: 48px;
 
-  /* Radius */
+  /* Radius (échelle DESIGN.md : 4/8/12) */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-
-  /* Motion */
-  --motion-fast: 120ms;
-  --motion-normal: 180ms;
-  --motion-slow: 260ms;
 }
 
 @theme inline {
@@ -60,17 +55,224 @@
   --font-mono: var(--font-mono);
 }
 
+/* Sélection « Liquid Glass » — recette DESIGN.md §Text Selection */
 ::selection {
-  background-color: #fde68a;
-  color: #1c0d02;
-  text-shadow: 0 1px 14px #fef3c7;
+  background-color: #e8ccb8;
+  color: #3f2f2a;
+  text-shadow: 0 0 12px #9b6f58;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-surface);
   color: var(--color-text);
+  background-color: var(--color-surface);
+  /* Champ d'atmosphère : la matière sur laquelle le verre réfracte. */
+  background-image:
+    radial-gradient(
+      1100px 540px at 50% -200px,
+      color-mix(in srgb, var(--color-primary-soft) 65%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      800px 460px at 100% 0%,
+      color-mix(in srgb, var(--color-surface-muted) 80%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      700px 400px at 0% 8%,
+      color-mix(in srgb, var(--color-primary-soft) 40%, transparent),
+      transparent 62%
+    );
+  background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Focus visible global (WCAG 2.2 AA) — visible au-dessus du verre et du flou. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-primary-strong);
+  outline-offset: 2px;
+}
+
+/* Encres sémantiques lisibles : les teintes brute (success/warning/danger)
+   ne passent pas AA en petit texte sur crème — on mélange vers le texte. */
+.ink-success {
+  color: color-mix(in srgb, var(--color-success) 55%, var(--color-text));
+}
+.ink-warning {
+  color: color-mix(in srgb, var(--color-warning) 55%, var(--color-text));
+}
+.ink-danger {
+  color: color-mix(in srgb, var(--color-danger) 55%, var(--color-text));
+}
+
+/* ─── Boutons : pilules réfractives (DESIGN.md Component Patterns) ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-normal) ease,
+    border-color var(--motion-normal) ease,
+    box-shadow var(--motion-normal) ease,
+    transform var(--motion-fast) ease;
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn[aria-current="page"] {
+  cursor: default;
+}
+
+.btn-primary {
+  background-image: linear-gradient(180deg, #7a5b4b 0%, #5f4639 100%);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 10px 24px -12px rgba(63, 47, 42, 0.55);
+}
+.btn-primary:hover {
+  background-image: linear-gradient(180deg, #8a6855 0%, #66493b 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 12px 28px -12px rgba(63, 47, 42, 0.6);
+}
+.btn-primary:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-secondary {
+  background-color: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  color: var(--color-text);
+  border-color: color-mix(in srgb, var(--color-border) 45%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 6px 16px -10px rgba(63, 47, 42, 0.45);
+}
+.btn-secondary:hover {
+  background-color: color-mix(in srgb, #ffffff 92%, transparent);
+  border-color: var(--color-primary);
+}
+
+.btn-danger {
+  background-image: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 8px 18px -12px rgba(153, 27, 27, 0.6);
+}
+.btn-danger:hover {
+  background-image: linear-gradient(180deg, #ca2020 0%, #a91616 100%);
+}
+.btn-danger:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: color-mix(in srgb, var(--color-text) 75%, var(--color-surface));
+}
+.btn-ghost:hover {
+  color: var(--color-primary-strong);
+}
+
+/* ─── Verre Liquide : teinte, bordure fine, éclat intérieur, ombre douce ─── */
+.glass {
+  background-color: color-mix(in srgb, var(--color-surface) 76%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 28%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 16px 40px -24px rgba(63, 47, 42, 0.45);
+}
+.glass-bar {
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 28%, transparent);
+  box-shadow: 0 12px 32px -24px rgba(63, 47, 42, 0.5);
+}
+.glass-card {
+  background-color: color-mix(in srgb, #ffffff 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 22%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 10px 28px -20px rgba(63, 47, 42, 0.4);
+  transition:
+    box-shadow var(--motion-normal) ease,
+    border-color var(--motion-normal) ease;
+}
+.glass-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 18px 44px -22px rgba(63, 47, 42, 0.5);
+}
+.glass-strong {
+  background-color: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 24px 56px -28px rgba(63, 47, 42, 0.55);
+}
+
+@supports (backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px)) {
+  .btn-secondary {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .glass,
+  .glass-bar,
+  .glass-card,
+  .glass-strong {
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  }
+}
+
+/* Repli sans flou : teintes solides lisibles (navigateurs sans backdrop-filter). */
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  .glass,
+  .glass-bar {
+    background-color: color-mix(in srgb, var(--color-surface) 94%, var(--color-primary-soft));
+  }
+  .glass-card {
+    background-color: #ffffff;
+  }
+  .glass-strong {
+    background-color: var(--color-surface);
+  }
+}
+
+/* Repli « reduced-transparency » : pas de flou, aplats solides. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-bar,
+  .glass-card,
+  .glass-strong,
+  .btn-secondary {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass,
+  .glass-bar {
+    background-color: color-mix(in srgb, var(--color-surface) 94%, var(--color-primary-soft));
+  }
+  .glass-strong {
+    background-color: var(--color-surface);
+  }
+  .glass-card {
+    background-color: #ffffff;
+  }
+  .btn-secondary {
+    background-color: var(--color-surface);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

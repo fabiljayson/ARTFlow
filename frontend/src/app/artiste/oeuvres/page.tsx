@@ -68,7 +68,7 @@ function ArtworkList() {
 
   if (error) {
     return (
-      <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
         {error}
       </p>
     );
@@ -88,7 +88,7 @@ function ArtworkList() {
   return (
     <div className="overflow-x-auto rounded-lg border border-border/25">
       <table className="w-full min-w-[720px] text-sm">
-        <thead className="bg-surface-muted/60 text-left text-xs uppercase tracking-wide text-text/60">
+        <thead className="bg-surface-muted/60 text-left text-xs uppercase tracking-wide text-text/75">
           <tr>
             <th className="px-4 py-3 font-semibold">Œuvre</th>
             <th className="px-4 py-3 font-semibold">Prix</th>
@@ -103,11 +103,11 @@ function ArtworkList() {
               <td className="px-4 py-3">
                 <Link
                   href={`/artiste/oeuvres/${artwork.id}`}
-                  className="font-medium text-text hover:text-primary"
+                  className="font-medium text-text hover:text-primary-strong"
                 >
                   {artwork.title}
                 </Link>
-                <p className="text-xs text-text/50">{artwork.reference}</p>
+                  <p className="text-xs text-text/70">{artwork.reference}</p>
               </td>
               <td className="px-4 py-3">{formatXAF(artwork.price_xaf)}</td>
               <td className="px-4 py-3">
@@ -184,7 +184,7 @@ export default function MyArtworksPage() {
           </div>
           <Link
             href="/artiste/oeuvres/nouvelle"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-strong"
+            className="btn btn-primary px-4 py-2 text-sm"
           >
             Nouvelle œuvre
           </Link>

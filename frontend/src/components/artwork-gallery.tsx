@@ -23,7 +23,7 @@ export function ArtworkGallery({
 
   if (images.length === 0 && videos.length === 0) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center rounded-lg border border-dashed border-border/40 bg-white/50 text-sm text-text/50">
+      <div className="flex aspect-[4/5] items-center justify-center rounded-lg border border-dashed border-border/40 bg-white/50 text-sm text-text/70">
         Aucun média pour cette œuvre.
       </div>
     );

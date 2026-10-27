@@ -32,10 +32,10 @@ export function Pagination({
   return (
     <nav aria-label="Pagination" className="mt-8 flex items-center justify-center gap-2 text-sm">
       {current > 1 ? (
-        <Link
-          href={linkFor(current - 1)}
-          className="rounded-md border border-border/40 bg-white/70 px-3 py-1.5 transition hover:bg-surface-muted"
-        >
+          <Link
+            href={linkFor(current - 1)}
+            className="btn btn-secondary px-3 py-1.5 text-sm"
+          >
           Précédent
         </Link>
       ) : null}
@@ -45,7 +45,7 @@ export function Pagination({
           <span
             key={page}
             aria-current="page"
-            className="rounded-md bg-primary px-3 py-1.5 font-semibold text-white"
+            className="btn btn-primary px-3 py-1.5 text-sm"
           >
             {page}
           </span>
@@ -53,7 +53,7 @@ export function Pagination({
           <Link
             key={page}
             href={linkFor(page)}
-            className="rounded-md border border-border/40 bg-white/70 px-3 py-1.5 transition hover:bg-surface-muted"
+            className="btn btn-secondary px-3 py-1.5 text-sm"
           >
             {page}
           </Link>
@@ -63,7 +63,7 @@ export function Pagination({
       {current < totalPages ? (
         <Link
           href={linkFor(current + 1)}
-          className="rounded-md border border-border/40 bg-white/70 px-3 py-1.5 transition hover:bg-surface-muted"
+          className="btn btn-secondary px-3 py-1.5 text-sm"
         >
           Suivant
         </Link>

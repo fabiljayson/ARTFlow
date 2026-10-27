@@ -35,18 +35,18 @@ export default async function ArtistsPage() {
               <Link
                 key={artist.slug}
                 href={`/artistes/${artist.slug}`}
-                className="rounded-lg border border-border/25 bg-white/70 p-5 transition hover:border-primary/40"
+                className="rounded-lg glass-card p-5"
               >
                 <h2 className="text-lg font-semibold text-text">{artist.display_name}</h2>
                 {(artist.city || artist.region) && (
-                  <p className="mt-1 text-sm text-text/60">
+                  <p className="mt-1 text-sm text-text/70">
                     {[artist.city, artist.region].filter(Boolean).join(", ")}
                   </p>
                 )}
                 {artist.bio ? (
                   <p className="mt-2 line-clamp-3 text-sm text-text/70">{artist.bio}</p>
                 ) : null}
-                <p className="mt-3 text-sm font-medium text-primary">
+                <p className="mt-3 text-sm font-medium text-primary-strong">
                   {artist.artwork_count} œuvre{artist.artwork_count > 1 ? "s" : ""}
                 </p>
               </Link>

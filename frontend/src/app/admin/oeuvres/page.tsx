@@ -99,7 +99,7 @@ function ModerationList() {
             aria-pressed={status === filter.value}
             className={`rounded-full border px-3 py-1.5 text-sm transition ${
               status === filter.value
-                ? "border-primary bg-primary text-white"
+                ? "border-primary-strong bg-primary-strong text-white shadow-sm"
                 : "border-border/40 bg-white/70 text-text/70 hover:bg-surface-muted"
             }`}
           >
@@ -109,11 +109,11 @@ function ModerationList() {
       </nav>
 
       {error ? (
-        <p role="alert" className="mt-4 rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="mt-4 rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
           {error}
         </p>
       ) : null}
-      {info ? <p className="mt-4 text-sm text-success">{info}</p> : null}
+      {info ? <p className="mt-4 text-sm ink-success">{info}</p> : null}
 
       <div className="mt-6">
         {loading ? (
@@ -130,7 +130,7 @@ function ModerationList() {
             {items.map((artwork) => (
               <li
                 key={artwork.id}
-                className="flex flex-wrap items-start gap-4 rounded-lg border border-border/25 bg-white/70 p-4"
+                className="flex flex-wrap items-start gap-4 rounded-lg glass-card p-4"
               >
                 <Link
                   href={`/oeuvre/${artwork.slug}`}
@@ -148,11 +148,11 @@ function ModerationList() {
                 <div className="min-w-[200px] flex-1">
                   <Link
                     href={`/oeuvre/${artwork.slug}`}
-                    className="font-semibold text-text hover:text-primary"
+                    className="font-semibold text-text hover:text-primary-strong"
                   >
                     {artwork.title}
                   </Link>
-                  <p className="text-xs text-text/50">{artwork.reference}</p>
+                  <p className="text-xs text-text/70">{artwork.reference}</p>
                   <p className="mt-1 text-sm text-text/70">{artwork.artist_display_name}</p>
                   <div className="mt-2 flex items-center gap-3">
                     <StatusBadge status={artwork.status} />

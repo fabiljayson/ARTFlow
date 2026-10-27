@@ -25,8 +25,8 @@ export function MediaImage({ src, alt, fill, sizes, className, priority }: Props
       <div
         className={
           fill
-            ? "flex h-full w-full items-center justify-center bg-surface-muted text-xs text-text/50"
-            : "flex h-48 w-full items-center justify-center bg-surface-muted text-xs text-text/50"
+            ? "flex h-full w-full items-center justify-center bg-surface-muted text-xs text-text/75"
+            : "flex h-48 w-full items-center justify-center bg-surface-muted text-xs text-text/75"
         }
       >
         Pas d&apos;image

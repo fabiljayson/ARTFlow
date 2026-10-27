@@ -54,7 +54,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Se
         {page.count > 1 ? "s" : ""}
       </p>
 
-      <form method="GET" action="/catalogue" className="mt-6 rounded-lg border border-border/25 bg-white/70 p-4">
+      <form method="GET" action="/catalogue" className="mt-6 rounded-lg glass-strong p-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-text/70">Recherche</span>
@@ -137,13 +137,13 @@ export default async function CataloguePage({ searchParams }: { searchParams: Se
           <div className="flex gap-2">
             <button
               type="submit"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-strong"
+              className="btn btn-primary px-4 py-2 text-sm"
             >
               Appliquer
             </button>
             <Link
               href="/catalogue"
-              className="rounded-md border border-border/50 bg-white/70 px-4 py-2 text-sm font-semibold transition hover:bg-surface-muted"
+              className="btn btn-secondary px-4 py-2 text-sm"
             >
               Réinitialiser
             </Link>

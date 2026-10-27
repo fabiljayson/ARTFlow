@@ -8,9 +8,9 @@ import { StatusBadge } from "@/components/status-badge";
 
 function StatTile({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-border/25 bg-white/70 p-4">
+    <div className="rounded-lg glass-card p-4">
       <p className="text-2xl font-bold text-primary-strong">{value}</p>
-      <p className="mt-1 text-sm text-text/60">{label}</p>
+      <p className="mt-1 text-sm text-text/70">{label}</p>
     </div>
   );
 }
@@ -45,7 +45,7 @@ function DashboardContent() {
 
   if (error) {
     return (
-      <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+      <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
         {error}
       </p>
     );
@@ -70,12 +70,12 @@ function DashboardContent() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-text">Dernières œuvres</h2>
           <div className="flex gap-3 text-sm">
-            <Link href="/artiste/oeuvres" className="text-primary hover:underline">
+            <Link href="/artiste/oeuvres" className="text-primary-strong hover:underline">
               Tout voir
             </Link>
             <Link
               href="/artiste/oeuvres/nouvelle"
-              className="rounded-md bg-primary px-3 py-1.5 font-semibold text-white transition hover:bg-primary-strong"
+              className="btn btn-primary px-3 py-1.5"
             >
               Nouvelle œuvre
             </Link>
@@ -83,7 +83,7 @@ function DashboardContent() {
         </div>
 
         {recent.length === 0 ? (
-          <p className="mt-4 text-sm text-text/60">
+          <p className="mt-4 text-sm text-text/70">
             Aucune œuvre pour l&apos;instant — commencez par en créer une.
           </p>
         ) : (
@@ -93,11 +93,11 @@ function DashboardContent() {
                 <div className="min-w-0">
                   <Link
                     href={`/artiste/oeuvres/${artwork.id}`}
-                    className="block truncate font-medium text-text hover:text-primary"
+                    className="block truncate font-medium text-text hover:text-primary-strong"
                   >
                     {artwork.title}
                   </Link>
-                  <p className="text-xs text-text/50">{artwork.reference}</p>
+                  <p className="text-xs text-text/70">{artwork.reference}</p>
                 </div>
                 <StatusBadge status={artwork.status} />
               </li>

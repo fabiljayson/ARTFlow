@@ -87,7 +87,7 @@ function EditArtwork() {
   if (!artwork) {
     return (
       <div>
-        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
           {error ?? "Œuvre introuvable."}
         </p>
         <Link href="/artiste/oeuvres" className="mt-4 inline-block text-sm text-primary hover:underline">
@@ -106,7 +106,7 @@ function EditArtwork() {
     <div className="space-y-10">
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-border/25 pb-5">
         <div>
-          <p className="text-sm text-text/50">{artwork.reference}</p>
+          <p className="text-sm text-text/70">{artwork.reference}</p>
           <h1 className="text-2xl font-bold text-primary-strong">{artwork.title}</h1>
           <div className="mt-2 flex items-center gap-3">
             <StatusBadge status={status} />
@@ -134,7 +134,7 @@ function EditArtwork() {
       </header>
 
       {error ? (
-        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
           {error}
         </p>
       ) : null}
@@ -173,8 +173,8 @@ export default function EditArtworkPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <RequireAuth role="artist">
-        <nav aria-label="Fil d'ariane" className="mb-6 text-sm text-text/60">
-          <Link href="/artiste/oeuvres" className="hover:text-primary">
+        <nav aria-label="Fil d'ariane" className="mb-6 text-sm text-text/70">
+          <Link href="/artiste/oeuvres" className="hover:text-primary-strong">
             Mes œuvres
           </Link>
           <span aria-hidden="true"> / </span>

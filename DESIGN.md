@@ -5,18 +5,18 @@ description: "Framework-agnostic design rules for web and mobile app implementat
 # ─── Colors ───────────────────────────────────────────────
 colors:
   # Brand
-  primary:       "#a16207"
-  primaryStrong: "#451a03"
-  primarySoft:   "#fde68a"
-  accent:        "#a16207"
+  primary:       "#9b6f58"
+  primaryStrong: "#5f4639"
+  primarySoft:   "#e8ccb8"
+  accent:        "#9b6f58"
 
   # Surfaces
-  surface:       "#fef3c7"
-  surfaceMuted:  "#fde68a"
+  surface:       "#fff5e8"
+  surfaceMuted:  "#f3dfcc"
 
   # Text & Border
-  text:          "#1c0d02"
-  border:        "#78350f"
+  text:          "#3f2f2a"
+  border:        "#7c5d4c"
 
   # Feedback
   success:       "#16A34A"
@@ -25,13 +25,13 @@ colors:
 
 # ─── Typography ───────────────────────────────────────────
 typography:
-  family:        "Roboto Condensed, Arial Narrow, sans-serif"
-  displayFamily: "Roboto Condensed, Arial Narrow, sans-serif"
+  family:        "Geist, system-ui, sans-serif"
+  displayFamily: "Geist, system-ui, sans-serif"
   monoFamily:    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-  source:        "Optional Google Font: https://fonts.google.com/specimen/Roboto+Condensed"
-  weights:       "300, 400, 500, 700"
-  defaultWeight: 500
-  tone:          "condensed"
+  source:        "Optional Google Font: https://fonts.google.com/specimen/Geist"
+  weights:       "400, 500, 600, 700"
+  defaultWeight: 600
+  tone:          "sans"
 
 # Spacing
 spacing:
@@ -95,112 +95,118 @@ This file is a portable design skill. Any AI or engineer should be able to read 
 7. Verify desktop and mobile before finishing.
 
 ## Visual Direction
-- Color direction: Warm - Soft amber depth.
-- Typography direction: Condensed UI - Dense sidebars.
-- Style direction: Glassmorphism - Frosted panels over gradients, glow, imagery, and layered UI surfaces
-- References: Frosted glass interfaces, Dark luminous SaaS heroes, gradient finance cards, Windows acrylic menus, blurred UI panels over imagery, minimal glass effect demos.
-- Visual style: Warm color direction, Condensed UI typography, Glassmorphism style.
+- Color direction: Clay - Earthy editorial warmth.
+- Typography direction: Geist UI - Modern SaaS screens.
+- Style direction: Liquid Glass - Floating translucent material with lens-like refraction, soft glow, and adaptive chrome
+- References: Apple Liquid Glass, visionOS controls, iOS widget glass, immersive travel hero overlays, smart home floating panels, dark glossy liquid hero surfaces, layered glass filter/overlay/specular construction.
+- Visual style: Clay color direction, Geist UI typography, Liquid Glass style.
 
-## Style System: Glassmorphism
-Use Glassmorphism to create a frosted interface where translucent panels, blurred backgrounds, soft gradients, luminous color fields, and thin borders make the UI feel layered and premium. Unlike Liquid Glass, this style is not about refractive blobs or adaptive material physics; it is about clean acrylic panels, glass cards, glass navigation, floating finance cards, app menus, and dark or colorful hero sections with readable frosted surfaces.
+## Style System: Liquid Glass
+Use Liquid Glass to make the interface feel like translucent adaptive material suspended over an immersive background. The style is defined by lens refraction, frosted depth, pill geometry, soft edge highlights, subtle glow, floating controls, and glass widgets that bend light without hiding the content. It works best for premium product pages, travel and media experiences, smart-home dashboards, command surfaces, app chrome, and interfaces where the background can carry atmosphere. It must feel tactile and alive, but never become an empty glass demo.
 
 ### Layout Rules
-- start with a controlled depth background: dark neutral canvas, purple or blue gradient, soft radial glow, product image, landscape photo, or abstract orb field.
-- use frosted panels as stable UI containers: nav bars, hero cards, app menus, payment cards, pricing slabs, feature panels, floating toolbars, dialogs, and sidebars.
-- compose the first viewport around a readable headline and one or two translucent surfaces; the background can glow, but content must remain sharp.
-- glass panels should usually be rectangular or rounded rectangles with consistent alignment, not irregular liquid shapes.
-- place vivid gradients, blurred circles, product artwork, or photography behind glass so the blur effect has visible depth.
-- use translucent cards to reveal context behind them, such as a card over a gradient, a menu over a desktop wallpaper, or CTA controls over a dark hero.
-- reserve solid or near-solid sections for long-form text, dense tables, docs, forms, and anything that needs reading comfort.
-- on mobile, reduce the number of overlapping translucent layers and stack glass panels in a simple vertical order.
+- start from an atmospheric base: a photo, dark depth field, soft gradient, product scene, or calm textured surface that gives glass something to refract.
+- place glass as floating chrome and overlays, not as the entire layout: nav bars, profile pills, control clusters, media cards, destination cards, smart-home widgets, command palettes, and focused CTA capsules.
+- compose the first viewport with a real content anchor first, then layer one to three glass surfaces around it; the glass should frame the story rather than replace it.
+- use capsule and liquid-rounded silhouettes for controls, floating widgets, and status panels; use larger soft rounded rectangles for cards and content modules.
+- use one oversized irregular glossy lens or blob only when the hero needs a dramatic focal material; keep surrounding navigation and CTAs clean so the hero does not become chaotic.
+- let important glass elements overlap the background or sit partially over media, but keep text on controlled tints with enough contrast.
+- create depth with an explicit layer model: background scene, glass filter/refraction layer, translucent overlay tint, specular highlight layer, rim shadow, and foreground content.
+- use dotted light fields, faint grid lines, glow trails, or specular streaks only as secondary atmosphere behind content.
+- on mobile and narrow panels, simplify floating layers into fewer stacked glass surfaces so controls do not cover headings, CTAs, forms, or navigation.
 
 ### Component Patterns
-- each frosted component needs a repeatable recipe: semi-transparent fill, backdrop blur, thin border, soft shadow, and optional inner highlight.
-- glass navigation should use enough tint and separation that links, active states, menus, and profile controls remain readable over dark or image backgrounds.
-- hero glass panels should support the headline and CTA; use a dark or light scrim when text crosses bright gradients or busy imagery.
-- payment cards, account cards, or product cards can use glass with visible numbers, logos, labels, and subtle diagonal shine.
-- Windows-style acrylic menus should feel calm and functional: dark translucent panel, clear app/icon grid, readable labels, and subtle blue or system-color depth.
-- primary buttons inside glass surfaces need stronger fill, brighter border, or glow than secondary buttons.
-- forms need stable field backgrounds, visible labels, helper text, error text, and focus rings; avoid fully transparent inputs.
-- dialogs, popovers, menus, and sheets should use stronger opacity than decorative glass cards because they contain decisions.
-- provide solid-color fallback surfaces when backdrop-filter or blur is unsupported.
+- each glass component needs a clear material recipe: backdrop blur, translucent fill, rim border, inner white highlight, soft dark shadow, and optional colored glow.
+- large liquid hero objects can use an irregular blob silhouette with bright rim lighting, smoky internal gradients, and subtle distortion behind the main headline.
+- use refractive pills for primary controls: rounded capsule, thin bright border, soft inner shine, centered label, and a small icon or arrow when it clarifies action.
+- use glass widgets for compact controls: toggles, media controls, profile chips, status badges, lock controls, camera controls, volume pills, and floating quick actions.
+- travel, gallery, and media cards can sit over imagery with a darker glass tint near the bottom so titles, metadata, and prices remain readable.
+- primary CTAs should be the cleanest and brightest glass object in the view, not just another translucent card.
+- interactive states should feel material: hover brightens the rim and tint, active compresses or darkens slightly, focus-visible adds an unmistakable ring above the glass.
+- use specular streaks, edge glow, and liquid highlights only on selected, hovered, or hero-level surfaces; too many highlights make the UI noisy.
+- separate implementation hooks for glass effects when possible: filter for blur/refraction, overlay for tint, specular for highlight, and content for readable text and controls.
+- forms, tables, and long reading areas need solid or lightly tinted surfaces; do not put dense content on highly refractive glass.
+- dialogs, command palettes, menus, and sheets need stronger tint and contrast than decorative widgets because they interrupt the workflow.
+- provide non-blur fallbacks with solid translucent colors for browsers, devices, or reduced-transparency contexts where backdrop-filter is unavailable.
 
 ### Existing Project Refactor Rules
-- inventory the existing product before styling: hero, navigation, CTAs, forms, cards, pricing, testimonials, media, routes, and footer.
-- preserve every existing section and decide whether it becomes a glass overlay, a solid content band, a media-backed hero, or a plain readable section.
-- do not convert dense text, tables, docs, or long forms into weak translucent panels when a stable surface is clearer.
-- patch backgrounds, overlays, borders, blur, and state styles section by section instead of rewriting the whole page.
-- if the existing page is plain, add depth behind glass first through gradient fields, blurred color circles, product artwork, or photography; do not add transparent panels over a flat empty background.
-- when restyling a page with strong imagery, add scrims or tinted overlays before placing text on top of the image.
-- when restyling a dark SaaS page, use glow and glass to frame the product surface, but keep the UI screenshot or main workflow visible.
-- when restyling a finance or product landing page, let glass cards carry concrete content such as card numbers, plan names, metrics, or feature labels rather than generic decoration.
-- after each glass change, verify that original copy, CTAs, icons, media, form fields, and navigation remain visible and reachable.
-- if content starts disappearing, inspect contrast, opacity, z-index, filter, and inherited text color before deleting or rebuilding sections.
+- inventory the current interface first: background media, hero, navigation, CTAs, cards, widgets, dialogs, forms, routes, and stateful controls.
+- preserve all existing content, routes, media, CTAs, forms, data logic, and section order unless the user explicitly asks for structural changes.
+- convert only the surfaces that naturally benefit from glass first: navigation, floating toolbars, hero CTAs, bottom bars, profile chips, selected cards, media overlays, and modal chrome.
+- if the current page has no atmospheric background, create a restrained gradient, product media area, or depth field before adding translucent overlays.
+- if the current hero already has a strong brand mark or headline, place the liquid object behind it as an optical material layer rather than covering or replacing the brand.
+- when applying to image-heavy pages, add dark or light scrims behind text instead of relying on blur alone.
+- when applying to existing dark UI, replace low-opacity gray text with clearer foreground tokens before adding glass layers.
+- when applying to existing light UI, strengthen the glass rim, shadow, and tint so white surfaces do not disappear.
+- if a screen is dense with data, docs, or forms, keep most content solid and reserve liquid glass for chrome, filters, toolbar actions, and selected states.
+- after each material change, verify that every original heading, CTA, icon, form field, image, and section is still visible and reachable.
 
 ### Spacing Rules
-- use 12px to 16px padding for compact nav/menu glass, 18px to 28px for cards and panels, and 32px to 56px for large hero glass surfaces.
-- leave visible negative space around frosted panels so shadow, blur, and glow can separate them from the background.
-- keep glass navigation compact and aligned; frosted chrome should feel light, not oversized.
-- use consistent gutters and alignment even when panels overlap gradients, photos, or abstract glow fields.
-- avoid stacking glass card inside glass card; use internal spacing, separators, or subtle tint shifts instead.
-- large glass cards need enough internal padding for labels, metadata, CTA groups, and icons to remain readable.
-- reserve full-width solid or near-solid bands for content-heavy sections that need reading comfort.
-- keep panel dimensions stable so loading states, hover states, and blur effects do not shift layout.
+- use 10px to 14px padding for tiny floating widgets, 12px to 18px for pill controls, 18px to 28px for cards, and 32px or more for hero glass modules.
+- keep at least 10px to 16px between adjacent translucent layers so rims, shadows, and refraction edges can be read.
+- use large radius for liquid objects: full pills for controls, 18px to 32px for widgets, and softer organic corners for hero overlays.
+- oversized liquid blobs need generous breathing room around their rim; do not crop the glow tightly unless the crop is an intentional full-bleed hero effect.
+- avoid edge-to-edge glass unless it is navigation chrome; glass needs surrounding negative space to feel suspended.
+- keep alignment precise even when shapes feel fluid; drifting glass objects still need a consistent optical grid.
+- use stable dimensions for nav bars, pills, toggles, widgets, cards, and badges so hover, loading, or selected states do not shift layout.
+- do not stack glass inside glass repeatedly; use one strong shell plus inner dividers, icons, labels, or tint shifts.
 
 ### Visual Hierarchy Rules
-- use background brightness, blur strength, tint, border, and glow to separate background, glass, and foreground text.
-- keep the hero message and primary CTA on the clearest part of the composition.
-- use accent glow for primary actions, active nav items, selected cards, payment cards, or the main product focal point, not every panel.
-- let gradients, photography, and product art create atmosphere while typography and spacing carry hierarchy.
-- avoid placing body copy over high-frequency imagery, bright highlights, or complex gradients without a readable scrim.
-- use stronger frosted surfaces for important information such as prices, dates, card numbers, form values, errors, and confirmations.
-- keep glass panels lighter than the content they contain: text, icons, CTAs, and data must be sharper than the frosted layer.
-- maintain focus rings that are visible on glass, dark backgrounds, and image-backed areas.
+- make the background cinematic but subordinate: it should create depth while the content and controls remain the readable foreground.
+- use the strongest rim light, glow, and refraction on the primary CTA, selected control, active widget, or hero glass object.
+- keep primary text, prices, form values, errors, and navigation labels on the most stable and highest-contrast glass layer.
+- use floating secondary widgets to imply spatial depth, but keep them smaller and lower contrast than the main task path.
+- let typography, placement, and control role define hierarchy before liquid material effects.
+- keep one dominant material moment per view, such as a hero CTA capsule, floating dock, smart-home control cluster, command palette, or featured media card.
+- when using a dark glossy hero lens, keep the headline, primary CTA, and core value proposition brighter and sharper than the material distortion.
+- make focus rings, error states, destructive actions, and loading states visually sit above blur, glow, and refraction.
 
 ### Style Anti-patterns
-- turn the page into a grid of identical glass cards just because Bento uses modules.
-- place text directly on busy translucent backgrounds without a scrim or stable panel.
-- use blur as a substitute for layout, hierarchy, or content grouping.
-- make every section translucent until depth loses meaning.
-- depend on backdrop-filter without a readable fallback.
-- hide real media, CTA paths, forms, or navigation behind decorative glow.
-- use low-opacity white text on light glass or low-opacity dark text on dark glass.
-- imitate Liquid Glass with irregular refractive blobs, specular lens distortion, or physics-like material when this style should be frosted acrylic.
+- replace page content with empty shiny backgrounds, decorative blobs, or glass panels with no product role.
+- place important copy directly over uncontrolled imagery, high blur, bright glow, or moving highlights.
+- animate glass effects constantly without reduced-motion support.
+- use liquid glass everywhere until all surfaces have the same importance.
+- rely on opacity alone to create glass without borders, tint, fallback, shadow, or contrast checks.
+- turn the design into a generic card grid; Liquid Glass should feel like floating material and adaptive chrome, not Bento.
+- put a glossy blob in front of important text, controls, or product media unless it is acting as a readable backing layer.
+- use glass for dense data tables, long forms, or documentation blocks when a solid surface would be clearer.
+- let floating glass controls cover content on mobile or small desktop sidebars.
 
 ### Style Checklist
-- the first viewport has a clear product or place signal, headline, supporting copy, and primary CTA.
-- the background provides visible depth through gradient, glow, imagery, product art, or wallpaper-like context.
-- all text on glass surfaces meets contrast against the final rendered background.
-- each translucent panel has a visible edge through tint, border, highlight, or shadow.
-- existing content, forms, media, CTAs, navigation, and routes remain present.
-- the UI still works when blur support is unavailable.
-- mobile views simplify glass effects when space or readability suffers.
-- the result reads as atmospheric frosted acrylic glass, not a generic card grid or Liquid Glass blob system.
-- focus, error, selected, hover, disabled, and loading states remain visible above the glass effect.
+- the page still contains all original content, CTAs, media, navigation, forms, and stateful controls.
+- the design has an atmospheric background or depth field that gives glass material something to refract.
+- complex liquid effects are separated into filter, overlay, specular, and content layers or an equivalent maintainable structure.
+- liquid glass appears on meaningful chrome, controls, widgets, media overlays, or product surfaces, not as empty decoration.
+- every glass surface has a readable boundary through tint, rim border, inner highlight, shadow, or glow.
+- text remains readable against the final rendered material on desktop and mobile.
+- primary actions, focus-visible rings, selected states, and errors are stronger than decorative highlights.
+- reduced-motion, non-blur, and solid-color fallbacks keep the design usable.
+- floating controls do not cover important content or block touch targets.
+- the result feels premium, fluid, refractive, and adaptive without sacrificing scannability or task flow.
 
 ## Design Tokens
 Use semantic tokens first. Raw values from frontmatter are source values, not permission to scatter hex codes or one-off sizes through implementation.
 
 ### Color
-- Primary action color: #a16207.
-- Strong primary: #451a03. Use for high-emphasis text, selected state, or strong borders.
-- Soft primary: #fde68a. Use for subtle surfaces, selected backgrounds, or calm highlights.
-- Surface: #fef3c7.
-- Muted surface: #fde68a.
-- Text: #1c0d02.
-- Border: #78350f.
+- Primary action color: #9b6f58.
+- Strong primary: #5f4639. Use for high-emphasis text, selected state, or strong borders.
+- Soft primary: #e8ccb8. Use for subtle surfaces, selected backgrounds, or calm highlights.
+- Surface: #fff5e8.
+- Muted surface: #f3dfcc.
+- Text: #3f2f2a.
+- Border: #7c5d4c.
 - Success, warning, and danger are semantic states. Pair them with labels, icons, or position; never rely on color alone.
 - When moving from a dark theme to a light or warm theme, update inherited light text classes such as white, muted-white, or low-opacity foregrounds.
 - Do not apply one warm/cream/brown palette across the entire page without contrast, hierarchy, and content anchors.
 
 ### Text Selection
-- Use this style-specific `::selection` treatment for Glassmorphism. It should follow the selected color tokens and stay readable.
+- Use this style-specific `::selection` treatment for Liquid Glass. It should follow the selected color tokens and stay readable.
 ```css
-/* Glassmorphism selection: frosted tint. */
+/* Liquid Glass selection: soft lens glow. */
 ::selection {
-  background-color: #fde68a;
-  color: #1c0d02;
-  text-shadow: 0 1px 14px #fef3c7;
+  background-color: #e8ccb8;
+  color: #3f2f2a;
+  text-shadow: 0 0 12px #9b6f58;
 }
 ```
 - If the selected color changes, keep the same style behavior but re-check text/background contrast.
@@ -213,11 +219,11 @@ Use semantic tokens first. Raw values from frontmatter are source values, not pe
 - Do not finish with invisible text, hidden CTAs, empty hero areas, or decorative backgrounds replacing product content.
 
 ### Typography
-- Primary family: Roboto Condensed, Arial Narrow, sans-serif.
-- Display family: Roboto Condensed, Arial Narrow, sans-serif.
+- Primary family: Geist, system-ui, sans-serif.
+- Display family: Geist, system-ui, sans-serif.
 - Monospace family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace.
-- Allowed weights: 300, 400, 500, 700.
-- Default UI weight: 500.
+- Allowed weights: 400, 500, 600, 700.
+- Default UI weight: 600.
 - Keep heading levels semantic. Visual size must follow layout importance, not HTML heading number.
 - Keep letter spacing at 0 by default. Use uppercase labels sparingly and only for short metadata.
 
@@ -270,13 +276,15 @@ Clear, concise, implementation-focused, low-jargon, and helpful without being de
 - define default, hover, active, focus-visible, disabled, loading, success, and error states.
 - design mobile-first, then enhance for tablet and desktop density.
 - keep implementation guidance portable across React, Vue, Svelte, plain HTML/CSS, and mobile UI stacks.
-- use glass where layering adds context: media-backed heroes, frosted nav, app menus, finance cards, pricing overlays, product previews, dialogs, and featured cards.
-- protect text with scrims, tint, stable panels, or stronger foreground tokens.
-- include borders, tint, shadow, inner highlight, and fallback surfaces for glass panels.
-- preserve product content while improving atmosphere, depth, and scan speed.
-- verify contrast after every blur, opacity, blend-mode, background, or glow change.
-- use real images, screenshots, maps, products, payment cards, app icons, or meaningful visual anchors when the existing project provides them.
-- prefer consistent acrylic rectangles and frosted cards over liquid blobs or refractive lens shapes.
+- use liquid glass for purposeful floating chrome, premium controls, media overlays, smart widgets, and high-value interaction surfaces.
+- preserve original content and improve the visual layer around it instead of replacing sections with empty material panels.
+- combine tint, blur, rim border, inner highlight, shadow, and subtle glow so every surface has a readable boundary.
+- use immersive backgrounds intentionally: product imagery, travel photos, soft depth gradients, or controlled dark fields.
+- use explicit filter, overlay, specular, and content layers when building complex liquid glass so the effect can be tuned without harming readability.
+- provide solid readable fallbacks for blur, transparency, reduced motion, and reduced transparency.
+- verify rendered contrast after every opacity, blur, background, or highlight change.
+- use subtle responsive motion between 160ms and 260ms when it clarifies interaction state.
+- prefer fewer stronger glass objects over many weak translucent fragments.
 
 ## Rules: Don't
 - use low-contrast text, hidden focus indicators, or color-only state communication.
@@ -285,14 +293,15 @@ Clear, concise, implementation-focused, low-jargon, and helpful without being de
 - mix unrelated visual metaphors in the same screen.
 - depend on framework-specific component names in design rules.
 - add decorative motion without reduced-motion fallbacks.
-- turn the page into a grid of identical glass cards just because Bento uses modules.
-- place text directly on busy translucent backgrounds without a scrim or stable panel.
-- use blur as a substitute for layout, hierarchy, or content grouping.
-- make every section translucent until depth loses meaning.
-- depend on backdrop-filter without a readable fallback.
-- hide real media, CTA paths, forms, or navigation behind decorative glow.
-- use low-opacity white text on light glass or low-opacity dark text on dark glass.
-- imitate Liquid Glass with irregular refractive blobs, specular lens distortion, or physics-like material when this style should be frosted acrylic.
+- replace page content with empty shiny backgrounds, decorative blobs, or glass panels with no product role.
+- place important copy directly over uncontrolled imagery, high blur, bright glow, or moving highlights.
+- animate glass effects constantly without reduced-motion support.
+- use liquid glass everywhere until all surfaces have the same importance.
+- rely on opacity alone to create glass without borders, tint, fallback, shadow, or contrast checks.
+- turn the design into a generic card grid; Liquid Glass should feel like floating material and adaptive chrome, not Bento.
+- put a glossy blob in front of important text, controls, or product media unless it is acting as a readable backing layer.
+- use glass for dense data tables, long forms, or documentation blocks when a solid surface would be clearer.
+- let floating glass controls cover content on mobile or small desktop sidebars.
 
 ## AI Implementation Checklist
 - Read this file before changing UI, layout, component styling, or interaction behavior.

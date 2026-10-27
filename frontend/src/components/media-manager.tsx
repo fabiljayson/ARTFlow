@@ -79,7 +79,7 @@ export function MediaManager({ artworkId }: { artworkId: number }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-text">Médias</h2>
         <label
-          className={`cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-strong ${
+          className={`btn btn-primary px-4 py-2 text-sm ${
             pending ? "pointer-events-none opacity-60" : ""
           }`}
         >
@@ -94,27 +94,27 @@ export function MediaManager({ artworkId }: { artworkId: number }) {
         </label>
       </div>
 
-      <p className="text-xs text-text/60">
+      <p className="text-xs text-text/70">
         Images : JPEG, PNG ou WebP (texte alternatif obligatoire, 10 max). Vidéo : MP4 ou
         WebM, 1 max.
       </p>
 
       {error ? (
-        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm ink-danger">
           {error}
         </p>
       ) : null}
-      {info ? <p className="text-sm text-success">{info}</p> : null}
+      {info ? <p className="text-sm ink-success">{info}</p> : null}
 
       {media.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border/40 bg-white/50 px-4 py-6 text-sm text-text/60">
+        <p className="rounded-md border border-dashed border-border/40 bg-white/50 px-4 py-6 text-sm text-text/70">
           Aucun média ajouté depuis l&apos;ouverture de cette page. Ajoutez au moins une image
           pour pouvoir soumettre l&apos;œuvre à la modération.
         </p>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {media.map((item) => (
-            <li key={item.id} className="overflow-hidden rounded-lg border border-border/25 bg-white/70">
+            <li key={item.id} className="overflow-hidden rounded-lg glass-card">
               <div className="relative aspect-[4/5] bg-surface-muted">
                 {item.kind === "IMAGE" ? (
                   <MediaImage
@@ -125,23 +125,23 @@ export function MediaManager({ artworkId }: { artworkId: number }) {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-text/60">
+                  <div className="flex h-full items-center justify-center text-xs text-text/75">
                     Vidéo
                     {item.is_primary ? (
-                      <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] text-white">
+                      <span className="absolute left-1 top-1 rounded-full bg-primary-strong px-1.5 py-0.5 text-[10px] font-medium text-white">
                         Principale
                       </span>
                     ) : null}
                   </div>
                 )}
                 {item.kind === "IMAGE" && item.is_primary ? (
-                  <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] text-white">
+                  <span className="absolute left-1 top-1 rounded-full bg-primary-strong px-1.5 py-0.5 text-[10px] font-medium text-white">
                     Principale
                   </span>
                 ) : null}
               </div>
               <div className="flex items-center justify-between gap-2 p-2">
-                <span className="truncate text-xs text-text/60">
+                <span className="truncate text-xs text-text/70">
                   {item.kind === "IMAGE" ? "Image" : "Vidéo"}
                 </span>
                 <button

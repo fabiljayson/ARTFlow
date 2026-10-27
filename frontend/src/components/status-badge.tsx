@@ -1,12 +1,12 @@
 import type { ArtworkStatus } from "@/lib/api";
 
 const TONES: Record<ArtworkStatus, string> = {
-  DRAFT: "bg-text/10 text-text/70 border-border/40",
-  IN_MODERATION: "bg-warning/15 text-warning border-warning/40",
-  PUBLISHED: "bg-success/15 text-success border-success/40",
-  REFUSED: "bg-danger/15 text-danger border-danger/40",
-  HIDDEN: "bg-text/10 text-text/60 border-border/40",
-  ARCHIVED: "bg-text/10 text-text/50 border-border/30",
+  DRAFT: "bg-text/10 text-text/80 border-border/40",
+  IN_MODERATION: "bg-warning/15 ink-warning border-warning/40",
+  PUBLISHED: "bg-success/15 ink-success border-success/40",
+  REFUSED: "bg-danger/15 ink-danger border-danger/40",
+  HIDDEN: "bg-text/10 text-text/75 border-border/40",
+  ARCHIVED: "bg-text/10 text-text/75 border-border/30",
 };
 
 const LABELS: Record<ArtworkStatus, string> = {
@@ -22,7 +22,7 @@ const LABELS: Record<ArtworkStatus, string> = {
 export function StatusBadge({ status }: { status: ArtworkStatus }) {
   return (
     <span
-      className={`inline-block rounded-md border px-2 py-0.5 text-xs font-medium ${TONES[status]}`}
+      className={`inline-block rounded-full border px-2 py-0.5 text-xs font-semibold ${TONES[status]}`}
     >
       {LABELS[status]}
     </span>

@@ -33,7 +33,7 @@ export default async function VideosPage() {
             {videos.map((video) => (
               <article
                 key={video.id}
-                className="overflow-hidden rounded-lg border border-border/25 bg-white/70"
+                className="overflow-hidden rounded-lg glass-card"
               >
                 <div className="bg-black">
                   <video
@@ -54,13 +54,13 @@ export default async function VideosPage() {
                 <div className="space-y-1 p-3">
                   <Link
                     href={`/oeuvre/${video.artwork_slug}`}
-                    className="block truncate text-sm font-semibold text-text hover:text-primary"
+                    className="block truncate text-sm font-semibold text-text hover:text-primary-strong"
                   >
                     {video.artwork_title}
                   </Link>
                   <Link
                     href={`/artistes/${video.artist_slug}`}
-                    className="block truncate text-xs text-text/60 hover:text-primary"
+                    className="block truncate text-xs text-text/70 hover:text-primary-strong"
                   >
                     {video.artist_display_name}
                   </Link>

@@ -35,8 +35,8 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <nav aria-label="Fil d'ariane" className="text-sm text-text/60">
-        <Link href="/artistes" className="hover:text-primary">
+      <nav aria-label="Fil d'ariane" className="text-sm text-text/70">
+        <Link href="/artistes" className="hover:text-primary-strong">
           Artistes
         </Link>
         <span aria-hidden="true"> / </span>
@@ -46,12 +46,12 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       <header className="mt-6 border-b border-border/25 pb-6">
         <h1 className="text-3xl font-bold text-primary-strong">{artist.display_name}</h1>
         {(artist.city || artist.region) && (
-          <p className="mt-1 text-text/60">
+          <p className="mt-1 text-text/70">
             {[artist.city, artist.region].filter(Boolean).join(", ")}
           </p>
         )}
         {artist.bio ? <p className="mt-4 max-w-2xl leading-relaxed text-text/80">{artist.bio}</p> : null}
-        <p className="mt-3 text-sm font-medium text-primary">
+        <p className="mt-3 text-sm font-medium text-primary-strong">
           {artist.artwork_count} œuvre{artist.artwork_count > 1 ? "s" : ""} publiée
           {artist.artwork_count > 1 ? "s" : ""}
         </p>
