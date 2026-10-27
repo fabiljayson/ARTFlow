@@ -1,22 +1,14 @@
 import Link from "next/link";
 import { formatXAF } from "@/lib/money";
+import { listCategories } from "@/lib/api";
 
-const CATEGORIES = ["Peinture", "Sculpture", "Artisanat", "Contemporain"];
+export default async function HomePage() {
+  const categories = await listCategories()
+    .then((page) => page.results)
+    .catch(() => []);
 
-export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      <header className="border-b border-border/30 bg-surface-muted/60 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <span className="text-xl font-bold tracking-tight text-primary">ArtFlow</span>
-          <nav aria-label="Navigation principale" className="flex gap-4 text-sm font-medium">
-            <Link href="/catalogue">Œuvres</Link>
-            <Link href="/videos">Vidéos</Link>
-            <Link href="/devenir-artiste">Devenir artiste</Link>
-          </nav>
-        </div>
-      </header>
-
+    <main>
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h1 className="text-4xl font-bold text-primary-strong sm:text-5xl">
           L&apos;art camerounais, en un flux.
@@ -46,20 +38,19 @@ export default function HomePage() {
             Catégories
           </h2>
           <ul className="mt-3 flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
-              <li key={c}>
-                <span className="rounded-full border border-border/40 bg-surface-muted px-4 py-1.5 text-sm">
-                  {c}
-                </span>
+            {categories.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/catalogue?category=${c.slug}`}
+                  className="inline-block rounded-full border border-border/40 bg-surface-muted px-4 py-1.5 text-sm transition hover:border-primary/50 hover:text-primary"
+                >
+                  {c.name_fr}
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
       </section>
-
-      <footer className="border-t border-border/30 py-8 text-center text-sm text-text/60">
-        ArtFlow — Phase B (fondation). Toutes les fonctionnalités arrivent en Phase C+.
-      </footer>
     </main>
   );
 }
