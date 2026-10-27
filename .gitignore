@@ -31,3 +31,6 @@ backend/media/
 # Divers
 .DS_Store
 *.log
+
+# Uploads privés (jamais commités)
+backend/private_media/
