@@ -2,8 +2,8 @@
 
 Marketplace multi-artistes camerounaise : découverte et vente d'œuvres d'art (peintures, sculptures, artisanat, contemporain) en **XAF**, commission **10 %**, approbation manuelle des artistes, expéditions par vendeur, paiement **Mobile Money** (MTN MoMo / Orange Money via CamPay — étude Phase A).
 
-> **Statut : Phase A (conception) — aucun code applicatif pour l'instant.**
-> Aucune fonctionnalité n'est « disponible » tant qu'elle n'est pas implémentée et testée.
+> **Statut : Phase B (fondation) — socle livré : backend Django, frontend Next.js, Postgres Docker, CI.**
+> Aucune fonctionnalité métier n'est « disponible » tant qu'elle n'est pas implémentée et testée (Phase C+).
 
 ## Documentation
 
@@ -22,9 +22,9 @@ Marketplace multi-artistes camerounaise : découverte et vente d'œuvres d'art (
 | [docs/decisions/](docs/decisions/) | Décisions d'architecture (ADR) |
 | [DESIGN.md](DESIGN.md) | Tokens et règles visuelles (source de vérité design) |
 
-## Prochaines étapes (après validation Phase A)
+## Prochaines étapes (après validation Phase B)
 
-1. **Phase B** — Fondation : `frontend/` (Next.js 16), `backend/` (Django 6.1 + DRF), Postgres Docker, CI, tests de base.
+1. ~~**Phase B** — Fondation~~ : **livrée** (backend Django + frontend Next.js + Postgres Docker + CI).
 2. **Phase C** — Identité, candidatures, catalogue, médias.
 3. **Phase D** — Commerce, paiements (compte CamPay à créer avec validation).
 4. **Phase E** — Expéditions, litiges, remboursements, notifications.
@@ -37,6 +37,34 @@ Marketplace multi-artistes camerounaise : découverte et vente d'œuvres d'art (
 - Node.js ≥ 22 + npm
 - Docker (PostgreSQL 18)
 - ffmpeg (outillage média, optionnel dev)
+
+## Démarrage (Phase B)
+
+Ports : **Postgres 5435**, **API 8003**, **web 5175** (choisis libres).
+
+```bash
+# 1. Base de données (conteneur artflow-postgres)
+docker compose -f infrastructure/docker-compose.yml up -d --wait
+
+# 2. Backend (Django + DRF)
+cd backend
+uv sync
+cp .env.example .env   # puis ajuster si besoin
+uv run python manage.py migrate
+uv run python manage.py runserver 127.0.0.1:8003
+
+# 3. Frontend (Next.js) — autre terminal
+cd frontend
+npm install
+npm run dev            # http://127.0.0.1:5175 (proxy /api → 8003)
+```
+
+Vérifications :
+
+```bash
+cd backend && uv run python -m pytest && uv run ruff check .
+cd frontend && npm test -- --run && npx tsc --noEmit && npm run build
+```
 
 ## Licences des données de démo
 

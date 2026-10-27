@@ -1,0 +1,26 @@
+# ArtFlow — Infrastructure de développement (Phase B)
+# Usage : docker compose -f infrastructure/docker-compose.yml up -d
+# Base ArtFlow isolée : port 5435 (voir docs/decisions/0003-postgres-docker.md)
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: artflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-artflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-artflow_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-artflow}
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - artflow-pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-artflow} -d $${POSTGRES_DB:-artflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  artflow-pgdata:
+    name: artflow-pgdata

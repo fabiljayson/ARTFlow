@@ -1,0 +1,9 @@
+.next/
+node_modules/
+out/
+.env.local
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+playwright-report/
+test-results/

@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* ArtFlow design tokens — source: DESIGN.md (ambre Glassmorphism) */
+:root {
+  /* Brand */
+  --color-primary: #a16207;
+  --color-primary-strong: #451a03;
+  --color-primary-soft: #fde68a;
+  --color-accent: #a16207;
+
+  /* Surfaces */
+  --color-surface: #fef3c7;
+  --color-surface-muted: #fde68a;
+
+  /* Text & Border */
+  --color-text: #1c0d02;
+  --color-border: #78350f;
+
+  /* Feedback */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+
+  /* Typography */
+  --font-sans: "Roboto Condensed", "Arial Narrow", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-section: 48px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-normal: 180ms;
+  --motion-slow: 260ms;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-strong: var(--color-primary-strong);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-text: var(--color-text);
+  --color-border: var(--color-border);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+::selection {
+  background-color: #fde68a;
+  color: #1c0d02;
+  text-shadow: 0 1px 14px #fef3c7;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
