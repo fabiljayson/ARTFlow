@@ -34,6 +34,7 @@
 | GET | `/catalog/artworks/` | public | filtres `q, category, price_min, price_max, available, artist, sort, page` — **uniquement PUBLISHED** |
 | GET | `/catalog/artworks/{slug}/` | public | fiche (404 si non publiée) |
 | GET | `/catalog/artworks/{slug}/similar/` | public | même catégorie, hors self, max 6 |
+| GET | `/catalog/artworks/{slug}/media/{mid}/{variant}/` | public* | `stream` (original), `thumb` (PNG 480px), `poster` (PNG); *si l'œuvre est PUBLISHED, sinon owner/MOD/ADMIN — 404 sinon |
 | GET | `/catalog/categories/` | public | arborescence |
 | GET | `/catalog/artists/` | public | artistes APPROVED (page publique) |
 | GET | `/catalog/artists/{slug}/` | public | profil + œuvres publiées |

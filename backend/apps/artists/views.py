@@ -3,6 +3,7 @@ from django.http import FileResponse, Http404
 from django.utils.text import get_valid_filename
 from rest_framework import generics, serializers, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -24,12 +25,15 @@ from apps.core.permissions import IsModeratorOrAdmin
 def _profile_or_404(user):
     try:
         return user.artist_profile
-    except ArtistProfile.DoesNotExist:
+    except (ArtistProfile.DoesNotExist, AttributeError):
+        # AttributeError: AnonymousUser has no related profile at all.
         raise Http404 from None
 
 
 class ApplicationView(APIView):
     """GET my application (404 if none) · POST create draft · PATCH update draft."""
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         profile = _profile_or_404(request.user)
@@ -52,6 +56,8 @@ class ApplicationView(APIView):
 
 
 class ApplicationSubmitView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         profile = _profile_or_404(request.user)
         profile = services.submit_application(profile=profile, user=request.user, request=request)
@@ -61,6 +67,7 @@ class ApplicationSubmitView(APIView):
 class DocumentUploadView(generics.ListCreateAPIView):
     """List/upload verification documents (owner). Multipart: kind + file."""
 
+    permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_class(self):
@@ -102,6 +109,8 @@ class DocumentUploadView(generics.ListCreateAPIView):
 
 
 class DocumentDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def delete(self, request, pk):
         deleted, _ = ArtistVerificationDocument.objects.filter(
             pk=pk, artist_profile__user=request.user

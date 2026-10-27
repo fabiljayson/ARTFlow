@@ -36,6 +36,41 @@ def upload_doc(client, kind="ID_CARD", name="id.pdf", content=PDF):
 
 
 @pytest.mark.django_db
+class TestApplicantAnonymous:
+    """Regression: applicant views used to be reachable anonymously (AllowAny default)
+    and crashed with a 500 instead of returning 401."""
+
+    def test_application_get_401(self, client):
+        assert client.get(APPLICATION).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_application_post_401(self, client):
+        resp = client.post(APPLICATION, {"display_name": "X", "city": "Y"}, format="json")
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_application_patch_401(self, client):
+        resp = client.patch(APPLICATION, {"bio": "x"}, format="json")
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_submit_401(self, client):
+        assert client.post(SUBMIT).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_documents_list_401(self, client):
+        assert client.get(DOCUMENTS).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_documents_upload_401(self, client):
+        assert upload_doc(client).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_document_delete_401(self, client):
+        assert client.delete(f"{DOCUMENTS}1/").status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_no_crash_returns_json_envelope(self, client):
+        """401 must be the JSON error envelope, never an HTML 500."""
+        resp = client.get(APPLICATION)
+        assert resp["Content-Type"].startswith("application/json")
+        assert resp.json()["error"]["code"] == "unauthenticated"
+
+
+@pytest.mark.django_db
 class TestApplicationDraft:
     def test_create_and_get_draft(self, client, user):
         client.force_login(user)

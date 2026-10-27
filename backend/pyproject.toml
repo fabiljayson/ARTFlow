@@ -10,6 +10,7 @@ dependencies = [
     "psycopg[binary]>=3.2,<3.3",
     "django-environ>=0.12,<0.13",
     "argon2-cffi>=25.1,<26",
+    "pillow>=11,<13",
 ]
 
 [dependency-groups]

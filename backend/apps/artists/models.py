@@ -24,6 +24,7 @@ class ArtistProfile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="artist_profile")
     display_name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True, blank=True)
     bio = models.TextField(blank=True)
     city = models.CharField(max_length=80)
     region = models.CharField(max_length=80, blank=True)
@@ -46,6 +47,18 @@ class ArtistProfile(models.Model):
     class Meta:
         ordering = ["-updated_at"]
         indexes = [models.Index(fields=["status"])]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+
+            base = slugify(self.display_name)[:110] or "artiste"
+            candidate, n = base, ArtistProfile.objects.filter(slug__startswith=base).count()
+            while ArtistProfile.objects.filter(slug=candidate).exists():
+                n += 1
+                candidate = f"{base}-{n}"
+            self.slug = candidate[:140]
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.display_name} ({self.status})"
