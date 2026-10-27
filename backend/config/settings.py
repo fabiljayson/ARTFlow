@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     # Local
     "apps.core",
+    "apps.accounts",
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,15 @@ DATABASES = {
     )
 }
 
+# Authentication — email as username, Argon2id first (docs/database.md §1)
+AUTH_USER_MODEL = "accounts.User"
+AUTH_PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -89,11 +99,19 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Email — console backend in dev (reset links readable in the runserver terminal).
+# Production must configure a real backend (docs: deployment, Phase G).
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    }
+}
+
 # DRF
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
+        "apps.core.authentication.ArtflowSessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
@@ -106,6 +124,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": "200/min",
+        # docs/api.md §1: login 10/min/IP, register 5/h/IP (ScopedRateThrottle → IP for anonymous)
+        "auth-login": "10/min",
+        "auth-register": "5/h",
     },
 }
 
