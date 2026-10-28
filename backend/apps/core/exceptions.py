@@ -31,6 +31,14 @@ class Conflict(APIException):
     default_detail = "Transition non autorisée."
 
 
+class InvalidSignature(APIException):
+    """Signature webhook invalide ou absente — code `invalid_signature` (docs/api.md §11)."""
+
+    status_code = status.HTTP_403_FORBIDDEN
+    default_detail = "Signature de webhook invalide."
+    artflow_code = "invalid_signature"
+
+
 def api_exception_handler(exc, context):
     """Convert DRF/Django exceptions to the ArtFlow error envelope."""
     if isinstance(exc, Http404):

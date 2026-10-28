@@ -1,6 +1,7 @@
 """Order/quote services — server-side money rules (docs/payments.md §3, ADR-0006)."""
 import hashlib
 import json
+import logging
 import secrets
 from datetime import timedelta
 from uuid import uuid4
@@ -23,6 +24,8 @@ from apps.commerce.models import (
 from apps.commerce.serializers import artwork_primary_image_url
 from apps.core.exceptions import Conflict, IdempotencyConflict
 from apps.core.models import PlatformSettings
+
+logger = logging.getLogger(__name__)
 
 
 def get_or_create_cart(user) -> Cart:
@@ -287,21 +290,30 @@ def cancel_order(order: Order) -> None:
         locked.save(update_fields=["status", "cancelled_at", "updated_at"])
 
 
-def mark_paid(order: Order) -> None:
+def mark_paid(order: Order, *, late: bool = False) -> None:
     """Passe la commande PAID : stock décrémenté, réservations CONVERTED, ledger CHARGE.
 
     Idempotent (rejeu webhook D3) : jamais deux décréments ni deux écritures ledger
     (unique (order_item, kind)) ; le stock ne devient jamais négatif (docs/payments.md §2.1).
+
+    late=True (webhook SUCCESSFUL après annulation/expiration, docs/payments.md §2.3) :
+    une commande CANCELLED repasse PAID, et un stock insuffisant est clampé à 0 avec une
+    alerte `finance` (litige manuel) au lieu de lever une erreur sur un paiement déjà reçu.
     """
     if order.status == Order.Status.PAID:
         return
-    if order.status != Order.Status.PENDING_PAYMENT:
+    allowed = (
+        (Order.Status.PENDING_PAYMENT, Order.Status.CANCELLED)
+        if late
+        else (Order.Status.PENDING_PAYMENT,)
+    )
+    if order.status not in allowed:
         raise Conflict("Seule une commande en attente de paiement peut être payée.")
     with transaction.atomic():
         locked = Order.objects.select_for_update().get(pk=order.pk)
         if locked.status == Order.Status.PAID:
             return
-        if locked.status != Order.Status.PENDING_PAYMENT:
+        if locked.status not in allowed:
             raise Conflict("Seule une commande en attente de paiement peut être payée.")
         items = list(
             locked.items.select_related("artwork__artist").order_by("artwork_id")
@@ -317,16 +329,25 @@ def mark_paid(order: Order) -> None:
         for item in items:
             artwork = artworks[item.artwork_id]
             if artwork.stock_quantity < item.quantity:
-                raise ValidationError(
-                    {
-                        "stock": f"Stock insuffisant pour finaliser « {artwork.title} » : "
-                        f"il reste {artwork.stock_quantity} exemplaire(s)."
-                    }
+                if not late:
+                    raise ValidationError(
+                        {
+                            "stock": f"Stock insuffisant pour finaliser « {artwork.title} » : "
+                            f"il reste {artwork.stock_quantity} exemplaire(s)."
+                        }
+                    )
+                logger.warning(
+                    "finance: stock insuffisant pour finaliser %s "
+                    "(artwork=%s, dispo=%s, demandé=%s) — clamp à 0, litige manuel.",
+                    artwork.title,
+                    artwork.pk,
+                    artwork.stock_quantity,
+                    item.quantity,
                 )
         now = timezone.now()
         for item in items:
             artwork = artworks[item.artwork_id]
-            artwork.stock_quantity -= item.quantity
+            artwork.stock_quantity = max(0, artwork.stock_quantity - item.quantity)
             artwork.save(update_fields=["stock_quantity"])
             locked.reservations.filter(
                 artwork_id=artwork.pk, status=StockReservation.Status.ACTIVE
@@ -346,3 +367,22 @@ def mark_paid(order: Order) -> None:
         locked.status = Order.Status.PAID
         locked.paid_at = now
         locked.save(update_fields=["status", "paid_at", "updated_at"])
+
+
+def release_order_after_payment_failure(order: Order) -> None:
+    """Libère les réservations et annule la commande impayée (paiement FAILED/EXPIRED).
+
+    Le statut du paiement est porté par l'appelant (payments.apply_status, sous verrou
+    déjà tenu) ; ici on ne touche que la commande et ses réservations (docs/payments.md §2.1).
+    """
+    with transaction.atomic():
+        locked = Order.objects.select_for_update().get(pk=order.pk)
+        if locked.status != Order.Status.PENDING_PAYMENT:
+            return
+        now = timezone.now()
+        locked.reservations.filter(status=StockReservation.Status.ACTIVE).update(
+            status=StockReservation.Status.RELEASED, released_at=now
+        )
+        locked.status = Order.Status.CANCELLED
+        locked.cancelled_at = now
+        locked.save(update_fields=["status", "cancelled_at", "updated_at"])
