@@ -4,7 +4,7 @@ from rest_framework.exceptions import APIException
 
 from apps.commerce.models import CommissionLedger, Order, StockReservation
 from apps.commerce.services import mark_paid
-from apps.commerce.tests.conftest import make_order
+from apps.conftest import make_order
 
 
 @pytest.mark.django_db

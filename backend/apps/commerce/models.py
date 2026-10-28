@@ -161,6 +161,7 @@ class Payment(models.Model):
     initiated_at = models.DateTimeField(null=True, blank=True)
     confirmed_at = models.DateTimeField(null=True, blank=True)
     raw_last_status = models.JSONField(null=True, blank=True)
+    poll_count = models.PositiveIntegerField(default=0)  # tentatives de réconciliation (cron poll)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

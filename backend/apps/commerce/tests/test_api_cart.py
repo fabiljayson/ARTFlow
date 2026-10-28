@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 
 from apps.catalogue.models import ArtworkStatus
 from apps.commerce.models import Cart
-from apps.commerce.tests.conftest import add_item
+from apps.conftest import add_item
 
 CART = "/api/v1/cart/"
 ITEMS = "/api/v1/cart/items/"

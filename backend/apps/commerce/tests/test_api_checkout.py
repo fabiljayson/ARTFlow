@@ -10,7 +10,7 @@ from rest_framework.test import APIClient
 from apps.accounts.models import Address
 from apps.catalogue.models import ArtworkStatus
 from apps.commerce.models import Order, Payment, StockReservation
-from apps.commerce.tests.conftest import add_item
+from apps.conftest import add_item
 
 CHECKOUT = "/api/v1/checkout/"
 

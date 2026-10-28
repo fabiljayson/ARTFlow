@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.utils import timezone
 
 from apps.commerce.models import Order, StockReservation
-from apps.commerce.tests.conftest import make_order
+from apps.conftest import make_order
 
 EXPIRE = "expire_stock_reservations"
 

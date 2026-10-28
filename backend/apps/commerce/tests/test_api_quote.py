@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 
 from apps.artists.models import ApplicationStatus, ArtistProfile
 from apps.catalogue.models import Artwork, ArtworkStatus
-from apps.commerce.tests.conftest import add_item
+from apps.conftest import add_item
 
 QUOTE = "/api/v1/checkout/quote/"
 

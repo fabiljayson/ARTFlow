@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.commerce.models import Order, StockReservation
-from apps.commerce.tests.conftest import make_order
+from apps.conftest import make_order
 
 ORDERS = "/api/v1/orders/"
 

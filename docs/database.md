@@ -275,6 +275,7 @@
 | failure_reason | varchar(255) null | |
 | initiated_at, confirmed_at | timestamptz | |
 | raw_last_status | JSON null | derniers poll/webhook (redacté) |
+| poll_count | int | tentatives du cron `poll_pending_payments` (max 20) |
 | created_at, updated_at | | |
 
 **Index** : `(order)`, `(provider, provider_reference) unique partiel non nul`.

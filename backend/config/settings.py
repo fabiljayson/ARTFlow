@@ -16,6 +16,10 @@ SECRET_KEY = env("SECRET_KEY", default="insecure-dev-key-change-me")
 DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
+# Payments (D3, docs/payments.md §2.1.6 §5) — secrets en env, jamais en base ni en git.
+PAYMENT_PROVIDER = env("PAYMENT_PROVIDER", default="mock")
+PAYMENT_WEBHOOK_SECRET = env("PAYMENT_WEBHOOK_SECRET", default="artflow-dev-webhook-secret")
+
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -33,6 +37,7 @@ INSTALLED_APPS = [
     "apps.artists",
     "apps.catalogue",
     "apps.commerce",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -137,6 +142,7 @@ REST_FRAMEWORK = {
         "auth-login": "10/min",
         "auth-register": "5/h",
         "checkout": "20/h",  # docs/api.md §1 : checkout 20/h/user
+        "payment-initiate": "30/h",  # docs/api.md §1 : initiation de paiement 30/h/user
     },
 }
 
