@@ -298,6 +298,36 @@ export interface ArtistDashboard {
   total_favorites: number;
 }
 
+// --- Panier (D1) — miroir de apps/commerce/serializers.py ---
+
+/** Œuvre projetée dans une ligne de panier. */
+export interface CartArtwork {
+  id: number;
+  slug: string;
+  title: string;
+  price_xaf: number;
+  stock_quantity: number;
+  is_available: boolean;
+  artist_display_name: string;
+  primary_image_url: string | null;
+}
+
+export interface CartItem {
+  id: number;
+  artwork: CartArtwork;
+  quantity: number;
+  line_total_xaf: number;
+  quantity_exceeds_stock: boolean;
+  artwork_unavailable: boolean;
+}
+
+export interface Cart {
+  id: number;
+  items_count: number;
+  items_total_xaf: number;
+  items: CartItem[];
+}
+
 export interface CatalogFilters {
   q?: string;
   category?: string;
@@ -478,4 +508,29 @@ export function moderateArtwork(
     method: "POST",
     body: JSON.stringify({ decision, reason }),
   });
+}
+
+// --- Panier acheteur (D1, docs/api.md §6) ---
+
+export function getCart(): Promise<Cart> {
+  return apiFetch("/cart/");
+}
+
+/** Ajoute une ligne — 201 si créée, 200 si la quantité a été incrémentée. */
+export function addCartItem(artworkId: number, quantity = 1): Promise<CartItem> {
+  return apiFetch("/cart/items", {
+    method: "POST",
+    body: JSON.stringify({ artwork_id: artworkId, quantity }),
+  });
+}
+
+export function updateCartItem(itemId: number, quantity: number): Promise<CartItem> {
+  return apiFetch(`/cart/items/${itemId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ quantity }),
+  });
+}
+
+export function removeCartItem(itemId: number): Promise<void> {
+  return apiFetch(`/cart/items/${itemId}`, { method: "DELETE" });
 }

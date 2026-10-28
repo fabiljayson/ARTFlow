@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { SimilarWorks } from "@/components/similar-works";
 import { ArtworkGallery } from "@/components/artwork-gallery";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ApiError, getArtwork } from "@/lib/api";
 import { formatXAF } from "@/lib/money";
 
@@ -120,9 +121,11 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
             </div>
           </dl>
 
+          {soldOut ? null : <AddToCartButton artworkId={artwork.id} />}
+
           <p className="mt-6 rounded-md border border-border/30 bg-surface-muted/50 p-3 text-xs text-text/75">
-            L&apos;achat et la livraison arrivent en Phase D. Pour l&apos;instant, contactez
-            l&apos;artiste via son profil.
+            Le paiement en ligne arrive dans la phase suivante : vous pouvez déjà ajouter
+            l&apos;œuvre à votre panier. En attendant, contactez l&apos;artiste via son profil.
           </p>
         </div>
       </div>

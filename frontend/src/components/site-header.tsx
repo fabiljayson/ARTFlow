@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartLink } from "@/components/cart/cart-link";
 
 const NAV = [
   { href: "/catalogue", label: "Œuvres" },
@@ -32,7 +33,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <nav aria-label="Navigation secondaire" className="flex gap-3 text-sm font-semibold">
+        <nav aria-label="Navigation secondaire" className="flex items-center gap-3 text-sm font-semibold">
+          <CartLink />
           {SECONDARY.map((item) => (
             <Link
               key={item.href}
