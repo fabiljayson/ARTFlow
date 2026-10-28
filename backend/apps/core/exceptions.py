@@ -24,6 +24,13 @@ class IdempotencyConflict(APIException):
     artflow_code = "idempotency_conflict"
 
 
+class Conflict(APIException):
+    """Transition d'état illégale — code `conflict` (docs/api.md §11)."""
+
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "Transition non autorisée."
+
+
 def api_exception_handler(exc, context):
     """Convert DRF/Django exceptions to the ArtFlow error envelope."""
     if isinstance(exc, Http404):

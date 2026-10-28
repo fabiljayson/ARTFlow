@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from apps.catalogue.models import ArtworkStatus
-from apps.commerce.models import Cart, CartItem
+from apps.commerce.models import Cart, CartItem, Order, OrderItem
 
 
 def artwork_primary_image_url(artwork, request=None) -> str | None:
@@ -103,3 +103,94 @@ class CartSerializer(serializers.ModelSerializer):
 
     def get_items_total_xaf(self, obj) -> int:
         return sum(item.artwork.price_xaf * item.quantity for item in self._fetched_items(obj))
+
+
+class OrderSummarySerializer(serializers.ModelSerializer):
+    """GET /orders/ — une ligne par commande (items_count vient de l'annotate du queryset)."""
+
+    items_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "reference",
+            "status",
+            "placed_at",
+            "paid_at",
+            "subtotal_items_xaf",
+            "shipping_total_xaf",
+            "grand_total_xaf",
+            "items_count",
+        ]
+
+
+class OrderItemDetailSerializer(serializers.ModelSerializer):
+    """Instantané de ligne (EF-9.1) — prix/commission figés, jamais recalculés."""
+
+    artwork_id = serializers.IntegerField(read_only=True)
+    artist = serializers.SerializerMethodField()
+    primary_image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "artwork_id",
+            "title_snapshot",
+            "unit_price_xaf",
+            "quantity",
+            "line_total_xaf",
+            "commission_rate_bps",
+            "commission_xaf",
+            "artist_net_xaf",
+            "artist",
+            "primary_image_url",
+        ]
+
+    def get_artist(self, obj) -> dict:
+        return {"id": obj.artist_id, "display_name": obj.artist.display_name}
+
+    def get_primary_image_url(self, obj):
+        return artwork_primary_image_url(obj.artwork, self.context.get("request"))
+
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    """GET /orders/{ref}/ + payload d'annulation — instantanés +/adresses/paiement."""
+
+    items = OrderItemDetailSerializer(many=True, read_only=True)
+    payment = serializers.SerializerMethodField()
+    shipments = serializers.SerializerMethodField()
+    disputes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = [
+            "reference",
+            "status",
+            "placed_at",
+            "paid_at",
+            "cancelled_at",
+            "subtotal_items_xaf",
+            "shipping_total_xaf",
+            "fees_total_xaf",
+            "grand_total_xaf",
+            "currency",
+            "shipping_address_snapshot",
+            "buyer_note",
+            "items",
+            "payment",
+            "shipments",
+            "disputes",
+        ]
+
+    def get_payment(self, obj):
+        payment = obj.payments.order_by("-created_at").first()
+        if payment is None:
+            return None
+        return {"provider": payment.provider, "status": payment.status}
+
+    def get_shipments(self, obj) -> list:
+        return []  # expéditions arrivent en D4
+
+    def get_disputes(self, obj) -> list:
+        return []  # litiges arrivent en D4

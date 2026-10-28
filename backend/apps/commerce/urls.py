@@ -9,4 +9,7 @@ urlpatterns = [
     path("cart/items/<int:pk>/", views.CartItemDetailView.as_view(), name="cart-item"),
     path("checkout/quote/", views.QuoteView.as_view(), name="checkout-quote"),
     path("checkout/", views.CheckoutView.as_view(), name="checkout"),
+    path("orders/", views.OrderListView.as_view(), name="orders"),
+    path("orders/<str:reference>/", views.OrderDetailView.as_view(), name="order-detail"),
+    path("orders/<str:reference>/cancel/", views.OrderCancelView.as_view(), name="order-cancel"),
 ]

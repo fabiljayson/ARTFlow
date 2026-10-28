@@ -1,7 +1,9 @@
 """Commerce views — cart + checkout endpoints (docs/api.md §6)."""
+from django.db.models import Prefetch, Sum
 from django.http import Http404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -9,15 +11,18 @@ from rest_framework.views import APIView
 
 from apps.accounts.models import Address
 from apps.catalogue.models import Artwork, ArtworkStatus
-from apps.commerce.models import CartItem
+from apps.commerce.models import CartItem, Order, OrderItem
 from apps.commerce.serializers import (
     CartItemCreateSerializer,
     CartItemPatchSerializer,
     CartItemSerializer,
     CartSerializer,
     CheckoutSerializer,
+    OrderDetailSerializer,
+    OrderSummarySerializer,
 )
 from apps.commerce.services import (
+    cancel_order,
     compute_fingerprint,
     compute_quote,
     create_checkout,
@@ -160,3 +165,52 @@ class CheckoutView(APIView):
             fingerprint=compute_fingerprint(request.data),
         )
         return Response(payload, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+
+class OrderListView(ListAPIView):
+    """GET /orders/ — mes commandes (paginées, scope buyer)."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSummarySerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(buyer=self.request.user).annotate(
+            items_count=Sum("items__quantity")
+        )
+
+
+def _order_queryset():
+    return Order.objects.prefetch_related(
+        Prefetch(
+            "items",
+            queryset=OrderItem.objects.select_related("artwork", "artwork__artist").prefetch_related(
+                "artwork__media"
+            ),
+        ),
+        "payments",
+    )
+
+
+class OrderDetailView(RetrieveAPIView):
+    """GET /orders/{reference}/ — instantanés figés, owner scope (404 sinon)."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderDetailSerializer
+    lookup_field = "reference"
+
+    def get_queryset(self):
+        return _order_queryset().filter(buyer=self.request.user)
+
+
+class OrderCancelView(APIView):
+    """POST /orders/{reference}/cancel/ — PENDING_PAYMENT uniquement (sinon 409)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, reference):
+        order = Order.objects.filter(reference=reference, buyer=request.user).first()
+        if order is None:
+            raise Http404
+        cancel_order(order)
+        fresh = _order_queryset().get(pk=order.pk)
+        return Response(OrderDetailSerializer(fresh, context={"request": request}).data)

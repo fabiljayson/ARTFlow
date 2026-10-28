@@ -11,9 +11,17 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.catalogue.models import Artwork, ArtworkStatus
-from apps.commerce.models import Cart, CartItem, Order, OrderItem, Payment, StockReservation
+from apps.commerce.models import (
+    Cart,
+    CartItem,
+    CommissionLedger,
+    Order,
+    OrderItem,
+    Payment,
+    StockReservation,
+)
 from apps.commerce.serializers import artwork_primary_image_url
-from apps.core.exceptions import IdempotencyConflict
+from apps.core.exceptions import Conflict, IdempotencyConflict
 from apps.core.models import PlatformSettings
 
 
@@ -257,3 +265,84 @@ def compute_quote(cart: Cart, request=None) -> dict:
         "items_count": sum(i["quantity"] for i in quote_items),
         "blocking_issues": blocking_issues,
     }
+
+
+def cancel_order(order: Order) -> None:
+    """Annule une commande PENDING_PAYMENT : réservations libérées, payment annulé."""
+    if order.status != Order.Status.PENDING_PAYMENT:
+        raise Conflict("Seule une commande en attente de paiement peut être annulée.")
+    with transaction.atomic():
+        locked = Order.objects.select_for_update().get(pk=order.pk)
+        if locked.status != Order.Status.PENDING_PAYMENT:
+            raise Conflict("Seule une commande en attente de paiement peut être annulée.")
+        now = timezone.now()
+        locked.reservations.filter(status=StockReservation.Status.ACTIVE).update(
+            status=StockReservation.Status.RELEASED, released_at=now
+        )
+        locked.payments.filter(
+            status__in=[Payment.Status.CREATED, Payment.Status.PENDING]
+        ).update(status=Payment.Status.CANCELLED)
+        locked.status = Order.Status.CANCELLED
+        locked.cancelled_at = now
+        locked.save(update_fields=["status", "cancelled_at", "updated_at"])
+
+
+def mark_paid(order: Order) -> None:
+    """Passe la commande PAID : stock décrémenté, réservations CONVERTED, ledger CHARGE.
+
+    Idempotent (rejeu webhook D3) : jamais deux décréments ni deux écritures ledger
+    (unique (order_item, kind)) ; le stock ne devient jamais négatif (docs/payments.md §2.1).
+    """
+    if order.status == Order.Status.PAID:
+        return
+    if order.status != Order.Status.PENDING_PAYMENT:
+        raise Conflict("Seule une commande en attente de paiement peut être payée.")
+    with transaction.atomic():
+        locked = Order.objects.select_for_update().get(pk=order.pk)
+        if locked.status == Order.Status.PAID:
+            return
+        if locked.status != Order.Status.PENDING_PAYMENT:
+            raise Conflict("Seule une commande en attente de paiement peut être payée.")
+        items = list(
+            locked.items.select_related("artwork__artist").order_by("artwork_id")
+        )
+        artworks = {
+            a.pk: a
+            for a in Artwork.objects.select_for_update()
+            .select_related("artist")
+            .filter(pk__in=[i.artwork_id for i in items])
+            .order_by("pk")
+        }
+        # Garde 1 : vérifier tout le monde avant de décrémenter quoi que ce soit.
+        for item in items:
+            artwork = artworks[item.artwork_id]
+            if artwork.stock_quantity < item.quantity:
+                raise ValidationError(
+                    {
+                        "stock": f"Stock insuffisant pour finaliser « {artwork.title} » : "
+                        f"il reste {artwork.stock_quantity} exemplaire(s)."
+                    }
+                )
+        now = timezone.now()
+        for item in items:
+            artwork = artworks[item.artwork_id]
+            artwork.stock_quantity -= item.quantity
+            artwork.save(update_fields=["stock_quantity"])
+            locked.reservations.filter(
+                artwork_id=artwork.pk, status=StockReservation.Status.ACTIVE
+            ).update(status=StockReservation.Status.CONVERTED)
+            CommissionLedger.objects.get_or_create(
+                order_item=item,
+                kind=CommissionLedger.Kind.CHARGE,
+                defaults={
+                    "order": locked,
+                    "artist": item.artist,
+                    "gross_xaf": item.line_total_xaf,
+                    "commission_xaf": item.commission_xaf,
+                    "artist_net_xaf": item.artist_net_xaf,
+                    "commission_rate_bps": item.commission_rate_bps,
+                },
+            )
+        locked.status = Order.Status.PAID
+        locked.paid_at = now
+        locked.save(update_fields=["status", "paid_at", "updated_at"])
