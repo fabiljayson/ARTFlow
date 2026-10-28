@@ -5,6 +5,17 @@ from apps.catalogue.models import ArtworkStatus
 from apps.commerce.models import Cart, CartItem
 
 
+def artwork_primary_image_url(artwork, request=None) -> str | None:
+    """Chemin de la vignette (thumb 480px) — partagé par le panier et le quote."""
+    media = next((m for m in artwork.media.all() if m.is_primary and m.thumbnail_file), None)
+    if media is None:
+        media = next((m for m in artwork.media.all() if m.thumbnail_file), None)
+    if media is None:
+        return None
+    path = f"/api/v1/catalog/artworks/{artwork.slug}/media/{media.pk}/thumb/"
+    return request.build_absolute_uri(path) if request else path
+
+
 class CartArtworkSerializer(serializers.Serializer):
     """Read-only projection of an artwork inside a cart line."""
 
@@ -21,14 +32,7 @@ class CartArtworkSerializer(serializers.Serializer):
         return obj.artist.display_name
 
     def get_primary_image_url(self, obj):
-        media = next((m for m in obj.media.all() if m.is_primary and m.thumbnail_file), None)
-        if media is None:
-            media = next((m for m in obj.media.all() if m.thumbnail_file), None)
-        if media is None:
-            return None
-        path = f"/api/v1/catalog/artworks/{obj.slug}/media/{media.pk}/thumb/"
-        request = self.context.get("request")
-        return request.build_absolute_uri(path) if request else path
+        return artwork_primary_image_url(obj, self.context.get("request"))
 
 
 class CartItemSerializer(serializers.ModelSerializer):

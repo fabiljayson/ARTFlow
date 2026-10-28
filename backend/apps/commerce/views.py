@@ -14,6 +14,7 @@ from apps.commerce.serializers import (
     CartItemSerializer,
     CartSerializer,
 )
+from apps.commerce.services import compute_quote
 
 
 def get_or_create_cart(user) -> Cart:
@@ -111,3 +112,16 @@ class CartItemDetailView(APIView):
         item = self._get_item(request, pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class QuoteView(APIView):
+    """POST /checkout/quote/ — simulation des totaux, toujours recalculée côté serveur.
+
+    Le corps de la requête est accepté mais ignoré : aucun montant client n'est de confiance.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        cart = get_or_create_cart(request.user)
+        return Response(compute_quote(cart, request=request))
