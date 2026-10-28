@@ -8,6 +8,7 @@ from apps.commerce.models import Cart
 from apps.commerce.tests.conftest import add_item
 
 CART = "/api/v1/cart/"
+ITEMS = "/api/v1/cart/items/"
 
 
 @pytest.fixture
@@ -80,3 +81,72 @@ class TestCartGet:
         data = client.get(CART).json()
         assert data["items"] == []
         assert data["items_count"] == 0
+
+
+@pytest.mark.django_db
+class TestCartAdd:
+    def test_unauthenticated_401(self, client, artwork_factory):
+        art = artwork_factory()
+        assert client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_add_creates_line(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(price=15000, stock=3)
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_201_CREATED
+        data = resp.json()
+        assert data["quantity"] == 1
+        assert data["line_total_xaf"] == 15000
+        assert data["artwork"]["id"] == art.pk
+        assert Cart.objects.get(user=user).items.count() == 1
+
+    def test_add_increments_existing(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(stock=5)
+        client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_200_OK
+        cart = Cart.objects.get(user=user)
+        assert cart.items.count() == 1
+        assert cart.items.get().quantity == 2
+
+    def test_add_caps_at_stock(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(stock=1)
+        client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert resp.json()["error"]["code"] == "validation_error"
+        assert "quantity" in resp.json()["error"]["details"]
+
+    def test_quantity_zero_or_negative_400(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory()
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 0}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": -2}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_over_stock_first_add_400(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(stock=2)
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 5}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert "quantity" in resp.json()["error"]["details"]
+
+    def test_unknown_artwork_404(self, client, user):
+        client.force_login(user)
+        resp = client.post(ITEMS, {"artwork_id": 999999, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_draft_artwork_404(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(status=ArtworkStatus.DRAFT)
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_out_of_stock_artwork_400(self, client, user, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(stock=0)
+        resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST

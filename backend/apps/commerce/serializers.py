@@ -58,6 +58,15 @@ class CartItemSerializer(serializers.ModelSerializer):
         return obj.artwork.status != ArtworkStatus.PUBLISHED
 
 
+class CartItemCreateSerializer(serializers.Serializer):
+    artwork_id = serializers.IntegerField()
+    quantity = serializers.IntegerField(min_value=1)
+
+
+class CartItemPatchSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField(min_value=1)
+
+
 class CartSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
     items_count = serializers.SerializerMethodField()
