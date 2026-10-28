@@ -12,6 +12,18 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
 
+class IdempotencyConflict(APIException):
+    """Clé Idempotency-Key réutilisée avec un corps différent ou appartenant à un autre user.
+
+    Le code métier `idempotency_conflict` est porté par l'attribut `artflow_code`
+    (docs/api.md §11).
+    """
+
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "Clé Idempotency-Key déjà utilisée avec un corps différent."
+    artflow_code = "idempotency_conflict"
+
+
 def api_exception_handler(exc, context):
     """Convert DRF/Django exceptions to the ArtFlow error envelope."""
     if isinstance(exc, Http404):
@@ -26,7 +38,7 @@ def api_exception_handler(exc, context):
         response = exception_handler(exc, context)
         if response is None:
             return None
-        code = _status_to_code(response.status_code)
+        code = getattr(exc, "artflow_code", None) or _status_to_code(response.status_code)
         # Normalize detail to message + details
         detail = response.data
         if isinstance(detail, dict) and "detail" in detail:

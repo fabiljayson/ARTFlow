@@ -1,25 +1,28 @@
-"""Commerce views — cart endpoints (docs/api.md §6)."""
+"""Commerce views — cart + checkout endpoints (docs/api.md §6)."""
 from django.http import Http404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from apps.accounts.models import Address
 from apps.catalogue.models import Artwork, ArtworkStatus
-from apps.commerce.models import Cart, CartItem
+from apps.commerce.models import CartItem
 from apps.commerce.serializers import (
     CartItemCreateSerializer,
     CartItemPatchSerializer,
     CartItemSerializer,
     CartSerializer,
+    CheckoutSerializer,
 )
-from apps.commerce.services import compute_quote
-
-
-def get_or_create_cart(user) -> Cart:
-    cart, _ = Cart.objects.get_or_create(user=user)
-    return cart
+from apps.commerce.services import (
+    compute_fingerprint,
+    compute_quote,
+    create_checkout,
+    get_or_create_cart,
+)
 
 
 def validate_quantity(value) -> int:
@@ -125,3 +128,35 @@ class QuoteView(APIView):
     def post(self, request):
         cart = get_or_create_cart(request.user)
         return Response(compute_quote(cart, request=request))
+
+
+class CheckoutView(APIView):
+    """POST /checkout/ — commande idempotente (docs/api.md §1 Idempotency-Key, §6)."""
+
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "checkout"
+
+    def post(self, request):
+        idempotency_key = (request.headers.get("Idempotency-Key") or "").strip()
+        if not idempotency_key:
+            raise ValidationError({"idempotency_key": "En-tête « Idempotency-Key » requis."})
+        if len(idempotency_key) > 64:
+            raise ValidationError({"idempotency_key": "Clé trop longue (64 caractères max)."})
+
+        serializer = CheckoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        address = Address.objects.filter(
+            pk=serializer.validated_data["address_id"], user=request.user
+        ).first()
+        if address is None:
+            raise Http404
+
+        payload, created = create_checkout(
+            request.user,
+            idempotency_key=idempotency_key,
+            address=address,
+            buyer_note=serializer.validated_data.get("buyer_note", ""),
+            fingerprint=compute_fingerprint(request.data),
+        )
+        return Response(payload, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)

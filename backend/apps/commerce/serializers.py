@@ -71,6 +71,13 @@ class CartItemPatchSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1)
 
 
+class CheckoutSerializer(serializers.Serializer):
+    """Corps de POST /checkout/ — aucun montant n'est accepté du client."""
+
+    address_id = serializers.IntegerField()
+    buyer_note = serializers.CharField(required=False, allow_blank=True, default="")
+
+
 class CartSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
     items_count = serializers.SerializerMethodField()

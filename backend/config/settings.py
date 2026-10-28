@@ -136,6 +136,7 @@ REST_FRAMEWORK = {
         # docs/api.md §1: login 10/min/IP, register 5/h/IP (ScopedRateThrottle → IP for anonymous)
         "auth-login": "10/min",
         "auth-register": "5/h",
+        "checkout": "20/h",  # docs/api.md §1 : checkout 20/h/user
     },
 }
 
