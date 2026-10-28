@@ -146,11 +146,12 @@ export default function PanierPage() {
                 {formatXAF(cart?.items_total_xaf ?? 0)}
               </span>
             </div>
-            <Button disabled className="w-full">
+            <Button className="w-full" onClick={() => router.push("/checkout")}>
               Passer la commande
             </Button>
             <p className="text-center text-xs text-text/70">
-              Le paiement arrive en phase suivante — vous ne serez pas débité pour l&apos;instant.
+              Le paiement arrive en phase suivante — vous ne serez pas débité pour
+              l&apos;instant.
             </p>
             <Link
               href="/catalogue"

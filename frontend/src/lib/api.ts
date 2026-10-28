@@ -534,3 +534,163 @@ export function updateCartItem(itemId: number, quantity: number): Promise<CartIt
 export function removeCartItem(itemId: number): Promise<void> {
   return apiFetch(`/cart/items/${itemId}`, { method: "DELETE" });
 }
+
+// --- Commandes (D2, docs/api.md §6/§7) ---
+
+export interface Address {
+  id: number;
+  label: string;
+  recipient_name: string;
+  line1: string;
+  line2: string;
+  city: string;
+  region: string;
+  phone: string;
+  is_default: boolean;
+}
+
+export interface AddressPayload {
+  label: string;
+  recipient_name: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  region?: string;
+  phone: string;
+}
+
+export interface QuoteItem {
+  artwork_id: number;
+  slug: string;
+  title: string;
+  quantity: number;
+  unit_price_xaf: number;
+  line_total_xaf: number;
+  artist: { id: number; display_name: string };
+  commission_rate_bps: number;
+  commission_xaf: number;
+  artist_net_xaf: number;
+  primary_image_url: string | null;
+}
+
+export interface QuoteShipping {
+  artist_id: number;
+  display_name: string;
+  shipping_fee_xaf: number;
+}
+
+export interface BlockingIssue {
+  artwork_id: number | string;
+  code: string;
+  message: string;
+  quantity_demandee: number;
+}
+
+export interface Quote {
+  items: QuoteItem[];
+  shipping: QuoteShipping[];
+  subtotal_items_xaf: number;
+  shipping_total_xaf: number;
+  fees_total_xaf: number;
+  grand_total_xaf: number;
+  items_count: number;
+  blocking_issues: BlockingIssue[];
+}
+
+export interface CheckoutResult {
+  order_reference: string;
+  status: string;
+  grand_total_xaf: number;
+  placed_at: string;
+  payment: { provider: string | null; status: string | null; redirect_info: unknown };
+}
+
+export interface OrderSummary {
+  reference: string;
+  status: string;
+  placed_at: string;
+  paid_at: string | null;
+  subtotal_items_xaf: number;
+  shipping_total_xaf: number;
+  grand_total_xaf: number;
+  items_count: number;
+}
+
+export interface OrderItemDetail {
+  id: number;
+  artwork_id: number;
+  title_snapshot: string;
+  unit_price_xaf: number;
+  quantity: number;
+  line_total_xaf: number;
+  commission_rate_bps: number;
+  commission_xaf: number;
+  artist_net_xaf: number;
+  artist: { id: number; display_name: string };
+  primary_image_url: string | null;
+}
+
+export interface OrderDetail {
+  reference: string;
+  status: string;
+  placed_at: string;
+  paid_at: string | null;
+  cancelled_at: string | null;
+  subtotal_items_xaf: number;
+  shipping_total_xaf: number;
+  fees_total_xaf: number;
+  grand_total_xaf: number;
+  currency: string;
+  shipping_address_snapshot: Record<string, string>;
+  buyer_note: string;
+  items: OrderItemDetail[];
+  payment: { provider: string; status: string } | null;
+  shipments: unknown[];
+  disputes: unknown[];
+}
+
+export function listAddresses(): Promise<Paginated<Address>> {
+  return apiFetch("/auth/addresses");
+}
+
+export function createAddress(payload: AddressPayload): Promise<Address> {
+  return apiFetch("/auth/addresses", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Quote serveur — totaux, commissions et blocages recalculés côté backend. */
+export function quoteCheckout(): Promise<Quote> {
+  return apiFetch("/checkout/quote", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+/**
+ * Crée la commande. La clé `Idempotency-Key` (UUID généré au clic) garantit
+ * qu'un double clic / retry renvoie la même commande (409 si corps différent).
+ */
+export function checkout(
+  payload: { address_id: number; buyer_note?: string },
+  idempotencyKey: string,
+): Promise<CheckoutResult> {
+  return apiFetch("/checkout", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: { "Idempotency-Key": idempotencyKey },
+  });
+}
+
+export function listOrders(): Promise<Paginated<OrderSummary>> {
+  return apiFetch("/orders");
+}
+
+export function getOrder(reference: string): Promise<OrderDetail> {
+  return apiFetch(`/orders/${reference}`);
+}
+
+export function cancelOrder(reference: string): Promise<OrderDetail> {
+  return apiFetch(`/orders/${reference}/cancel`, { method: "POST" });
+}
