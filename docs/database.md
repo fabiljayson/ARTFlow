@@ -220,6 +220,7 @@
 | shipping_address_snapshot | JSON | copie complète au checkout |
 | buyer_note | text null | |
 | idempotency_key | varchar(64) unique | reçu du client ou généré |
+| request_fingerprint | varchar(64) index | sha256 du corps checkout canonique (détection « clé réutilisée + corps différent » → 409 `idempotency_conflict`) |
 | placed_at | timestamptz | |
 | paid_at | timestamptz null | |
 | cancelled_at | timestamptz null | |
