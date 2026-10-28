@@ -70,6 +70,46 @@ def apply_status(
     return payment
 
 
+def initiate_payment(
+    *, external_reference: str, user, phone: str, operator: str
+) -> Payment:
+    """Initie le paiement : CREATED → PENDING sous verrou order→payment.
+
+    Idempotent (re-POST sur PENDING = retour courant) ; terminal/CANCELLED → Conflict ;
+    commande d'un autre user ou référence inconnue → Http404 (pas de fuite d'existence).
+    `provider_reference` est généré ici (aucun appel réseau — gateway mock).
+    """
+    found = (
+        Payment.objects.select_related("order")
+        .filter(external_reference=external_reference)
+        .first()
+    )
+    if found is None or found.order.buyer_id != user.pk:
+        raise Http404
+    with transaction.atomic():
+        Order.objects.select_for_update().get(pk=found.order_id)  # lock order d'abord
+        payment = Payment.objects.select_for_update().get(pk=found.pk)
+        if payment.status == Payment.Status.PENDING:
+            return payment
+        if payment.status != Payment.Status.CREATED:
+            raise Conflict("Ce paiement ne peut plus être initié.")
+        payment.phone = phone
+        payment.operator = operator
+        payment.provider_reference = gateway.initiate()
+        payment.initiated_at = timezone.now()
+        payment.save(
+            update_fields=[
+                "phone",
+                "operator",
+                "provider_reference",
+                "initiated_at",
+                "updated_at",
+            ]
+        )
+        apply_status(payment, Payment.Status.PENDING)
+        return payment
+
+
 def ingest_event(
     *,
     event_id: str,

@@ -55,7 +55,12 @@ class TestOrderDetail:
         assert data["subtotal_items_xaf"] == 30000
         assert data["shipping_address_snapshot"]["city"] == "Yaoundé"
         assert data["buyer_note"] == ""
-        assert data["payment"] == {"provider": "MOCK", "status": "CREATED"}
+        assert data["payment"] == {
+            "provider": "MOCK",
+            "status": "CREATED",
+            "external_reference": order.payments.get().external_reference,
+            "failure_reason": "",
+        }
         assert data["shipments"] == []
         assert data["disputes"] == []
 

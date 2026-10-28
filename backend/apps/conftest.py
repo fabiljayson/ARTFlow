@@ -101,3 +101,15 @@ def make_order(buyer, artwork, *, quantity=1, status=Order.Status.PENDING_PAYMEN
         order=order, external_reference=uuid4().hex, amount_xaf=line_total
     )
     return order
+
+
+def make_pending(order) -> Payment:
+    """Passe le paiement de `order` en PENDING (simulateur d'initiation, plan D3)."""
+    payment = order.payments.get()
+    payment.status = Payment.Status.PENDING
+    payment.initiated_at = timezone.now()
+    payment.provider_reference = f"MOCK-{uuid4().hex}"
+    payment.save(
+        update_fields=["status", "initiated_at", "provider_reference", "updated_at"]
+    )
+    return payment

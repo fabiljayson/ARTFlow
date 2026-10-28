@@ -187,7 +187,12 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         payment = obj.payments.order_by("-created_at").first()
         if payment is None:
             return None
-        return {"provider": payment.provider, "status": payment.status}
+        return {
+            "provider": payment.provider,
+            "status": payment.status,
+            "external_reference": payment.external_reference,
+            "failure_reason": payment.failure_reason,
+        }
 
     def get_shipments(self, obj) -> list:
         return []  # expéditions arrivent en D4

@@ -9,7 +9,7 @@
 - Erreurs : enveloppe stable `{"error": {"code": "...", "message": "...", "details": {...}}}` ; codes machine stables.
 - Dates : ISO-8601 UTC. Montants : entiers XAF, champ suffixé `_xaf`.
 - Idempotence checkout : header `Idempotency-Key` (uuid) obligatoire.
-- Rate limits : login 10/min/IP ; register 5/h/IP ; checkout 20/h/user ; webhooks : hors session (signature only).
+- Rate limits : login 10/min/IP ; register 5/h/IP ; checkout 20/h/user ; initiate paiement 30/h/user ; webhooks : hors session (signature only, aucun throttle).
 
 ## 2. Auth / compte (`/auth/`)
 
@@ -98,13 +98,14 @@
 | GET | `/disputes/` | selon rôle | scoppé |
 | POST | `/orders/{ref}/refunds/` | buyer | demande remboursement |
 
-## 7. Paiements (webhooks + consultation)
+## 7. Paiements (webhooks + initiation — implémenté D3, mock signé)
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/payments/webhooks/campay/` | **signature only** | corps brut ; HMAC vérifié ; 200 rapide ; idempotent |
-| GET | `/payments/{uuid}/status/` | buyer owner | statut pour polling UI |
-| POST | `/admin/payments/{id}/simulate/` | ADMIN (env démo uniquement) | sandbox hooks |
+| POST | `/payments/webhook/` | **signature only** | corps brut ; HMAC-SHA256 vérifié (`X-ArtFlow-Signature: sha256=…`) ; 200 rapide ; rejeu `event_id` → 200 `duplicate: true` ; `amount_xaf` ≠ commande → 409 ; transition illégale → 409 ; signature absente/invalide → 403 `invalid_signature` |
+| POST | `/payments/{external_reference}/initiate/` | buyer owner | `{phone: "+2376…", operator: "MTN"\|"ORANGE"}` ; CREATED → PENDING + `provider_reference` simulé ; déjà PENDING → 200 idempotent ; terminal → 409 ; hors proprio → 404 ; throttle 30/h/user |
+| POST | `/payments/{external_reference}/simulate/` | buyer owner, MOCK only | envoie un webhook signé en interne selon un scénario (`success`, `fail`, `timeout`, `webhook_lost_then_late`, `duplicate_webhook`) ; `PAYMENT_PROVIDER != mock` → 404 |
+| GET | `/orders/{ref}/` | buyer owner | `payment` enrichi : `{provider, status, external_reference, failure_reason}` (polling UI toutes les 3 s sur la page paiement) |
 
 ## 8. Administration
 
@@ -152,6 +153,7 @@
 | `validation_error` | 400 | champs DRF (`details` = map) |
 | `unauthenticated` | 401 | session absente |
 | `permission_denied` | 403 | périmètre OK, action non |
+| `invalid_signature` | 403 | webhook : HMAC absent ou non valide |
 | `not_found` | 404 | hors périmètre ou inexistant |
 | `conflict` | 409 | transition illégale, stock, doublon |
 | `idempotency_conflict` | 409 | même clé, corps différent |

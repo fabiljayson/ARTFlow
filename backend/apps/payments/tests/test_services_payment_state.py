@@ -7,21 +7,10 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.commerce.models import CommissionLedger, Order, Payment, StockReservation
-from apps.conftest import make_order
+from apps.conftest import make_order, make_pending
 from apps.core.exceptions import Conflict
 from apps.payments import services as payment_services
 from apps.payments.models import PaymentEvent
-
-
-def make_pending(order) -> Payment:
-    payment = order.payments.get()
-    payment.status = Payment.Status.PENDING
-    payment.initiated_at = timezone.now()
-    payment.provider_reference = "MOCK-testref"
-    payment.save(
-        update_fields=["status", "initiated_at", "provider_reference", "updated_at"]
-    )
-    return payment
 
 
 def ingest(
