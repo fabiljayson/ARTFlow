@@ -150,3 +150,59 @@ class TestCartAdd:
         art = artwork_factory(stock=0)
         resp = client.post(ITEMS, {"artwork_id": art.pk, "quantity": 1}, format="json")
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def item_url(pk):
+    return f"{ITEMS}{pk}/"
+
+
+@pytest.mark.django_db
+class TestCartItemUpdate:
+    def test_unauthenticated_401(self, client, cart, artwork_factory):
+        item = add_item(cart, artwork_factory(), qty=1)
+        assert client.patch(item_url(item.pk), {"quantity": 2}).status_code == status.HTTP_401_UNAUTHORIZED
+        assert client.delete(item_url(item.pk)).status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_patch_quantity(self, client, user, cart, artwork_factory):
+        client.force_login(user)
+        art = artwork_factory(price=15000, stock=3)
+        item = add_item(cart, art, qty=1)
+        resp = client.patch(item_url(item.pk), {"quantity": 2}, format="json")
+        assert resp.status_code == status.HTTP_200_OK
+        data = resp.json()
+        assert data["quantity"] == 2
+        assert data["line_total_xaf"] == 30000
+
+    def test_patch_quantity_over_stock_400(self, client, user, cart, artwork_factory):
+        client.force_login(user)
+        item = add_item(cart, artwork_factory(stock=1), qty=1)
+        resp = client.patch(item_url(item.pk), {"quantity": 5}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert "quantity" in resp.json()["error"]["details"]
+
+    def test_patch_quantity_zero_400(self, client, user, cart, artwork_factory):
+        client.force_login(user)
+        item = add_item(cart, artwork_factory(), qty=1)
+        resp = client.patch(item_url(item.pk), {"quantity": 0}, format="json")
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_delete_204_and_gone(self, client, user, cart, artwork_factory):
+        client.force_login(user)
+        item = add_item(cart, artwork_factory(), qty=1)
+        resp = client.delete(item_url(item.pk))
+        assert resp.status_code == status.HTTP_204_NO_CONTENT
+        assert resp.content == b""
+        assert cart.items.count() == 0
+        assert client.get(CART).json()["items"] == []
+
+    def test_foreign_item_404(self, client, user, other_user, artwork_factory):
+        other_cart = Cart.objects.create(user=other_user)
+        item = add_item(other_cart, artwork_factory(), qty=1)
+        client.force_login(user)
+        assert client.patch(item_url(item.pk), {"quantity": 2}, format="json").status_code == status.HTTP_404_NOT_FOUND
+        assert client.delete(item_url(item.pk)).status_code == status.HTTP_404_NOT_FOUND
+
+    def test_missing_item_404(self, client, user):
+        client.force_login(user)
+        assert client.patch(item_url(999999), {"quantity": 2}, format="json").status_code == status.HTTP_404_NOT_FOUND
+        assert client.delete(item_url(999999)).status_code == status.HTTP_404_NOT_FOUND

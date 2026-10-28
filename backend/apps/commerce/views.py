@@ -8,7 +8,12 @@ from rest_framework.views import APIView
 
 from apps.catalogue.models import Artwork, ArtworkStatus
 from apps.commerce.models import Cart, CartItem
-from apps.commerce.serializers import CartItemCreateSerializer, CartItemSerializer, CartSerializer
+from apps.commerce.serializers import (
+    CartItemCreateSerializer,
+    CartItemPatchSerializer,
+    CartItemSerializer,
+    CartSerializer,
+)
 
 
 def get_or_create_cart(user) -> Cart:
@@ -77,3 +82,32 @@ class CartItemCreateView(APIView):
             CartItemSerializer(item, context={"request": request}).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
+
+
+class CartItemDetailView(APIView):
+    """PATCH/DELETE /cart/items/{id}/ — owner scope: 404 si la ligne n'est pas au panier du user."""
+
+    permission_classes = [IsAuthenticated]
+
+    def _get_item(self, request, pk) -> CartItem:
+        item = CartItem.objects.filter(pk=pk, cart__user=request.user).select_related(
+            "artwork", "artwork__artist"
+        ).first()
+        if item is None:
+            raise Http404
+        return item
+
+    def patch(self, request, pk):
+        item = self._get_item(request, pk)
+        serializer = CartItemPatchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        quantity = validate_quantity(serializer.validated_data["quantity"])
+        check_stock(item.artwork, quantity)
+        item.quantity = quantity
+        item.save(update_fields=["quantity"])
+        return Response(CartItemSerializer(item, context={"request": request}).data)
+
+    def delete(self, request, pk):
+        item = self._get_item(request, pk)
+        item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
