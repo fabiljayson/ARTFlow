@@ -133,7 +133,7 @@ describe("/checkout", () => {
     expect(createAddress).toHaveBeenCalledTimes(1);
   });
 
-  it("confirme avec un Idempotency-Key UUID et redirige vers la commande", async () => {
+  it("confirme avec un Idempotency-Key UUID et redirige vers la page de paiement", async () => {
     vi.mocked(quoteCheckout).mockResolvedValue(QUOTE);
     vi.mocked(listAddresses).mockResolvedValue(ADDRESSES);
     vi.mocked(checkout).mockResolvedValue({
@@ -154,7 +154,7 @@ describe("/checkout", () => {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
     await vi.waitFor(() =>
-      expect(push).toHaveBeenCalledWith("/commandes/ORD-2026-000042"),
+      expect(push).toHaveBeenCalledWith("/commandes/ORD-2026-000042/paiement"),
     );
   });
 

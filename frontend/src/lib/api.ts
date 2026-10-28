@@ -644,7 +644,12 @@ export interface OrderDetail {
   shipping_address_snapshot: Record<string, string>;
   buyer_note: string;
   items: OrderItemDetail[];
-  payment: { provider: string; status: string } | null;
+  payment: {
+    provider: string;
+    status: string;
+    external_reference: string;
+    failure_reason: string;
+  } | null;
   shipments: unknown[];
   disputes: unknown[];
 }
@@ -693,4 +698,40 @@ export function getOrder(reference: string): Promise<OrderDetail> {
 
 export function cancelOrder(reference: string): Promise<OrderDetail> {
   return apiFetch(`/orders/${reference}/cancel`, { method: "POST" });
+}
+
+// --- Paiements (D3, docs/api.md §7) ---
+
+export interface PaymentInitiate {
+  external_reference: string;
+  status: string;
+  provider_reference: string;
+  initiated_at: string;
+}
+
+export interface SimulateResult {
+  delivered: number;
+  duplicates?: number;
+}
+
+/** Démarre la tentative — `external_reference` du paiement (route backend). */
+export function initiatePayment(
+  externalReference: string,
+  payload: { phone: string; operator: string },
+): Promise<PaymentInitiate> {
+  return apiFetch(`/payments/${externalReference}/initiate`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Scénario sandbox MOCK — 404 si `PAYMENT_PROVIDER != mock`. */
+export function simulatePayment(
+  externalReference: string,
+  scenario: "success" | "fail",
+): Promise<SimulateResult> {
+  return apiFetch("/payments/dev/simulate", {
+    method: "POST",
+    body: JSON.stringify({ external_reference: externalReference, scenario }),
+  });
 }

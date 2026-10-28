@@ -113,6 +113,12 @@ export default function CommandeDetailPage() {
             temporairement. Vous pouvez l&apos;annuler tant que le paiement n&apos;est pas
             effectué.
           </p>
+          <Link
+            href={`/commandes/${order.reference}/paiement`}
+            className="btn btn-primary mt-3 inline-flex px-4 py-2 text-sm"
+          >
+            Payer maintenant
+          </Link>
         </div>
       ) : null}
 

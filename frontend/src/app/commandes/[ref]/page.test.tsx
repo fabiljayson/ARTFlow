@@ -63,7 +63,12 @@ function makeOrder(overrides: Partial<OrderDetail> = {}): OrderDetail {
         primary_image_url: null,
       },
     ],
-    payment: { provider: "MOCK", status: "CREATED" },
+    payment: {
+      provider: "MOCK",
+      status: "CREATED",
+      external_reference: "ext-ref-42",
+      failure_reason: "",
+    },
     shipments: [],
     disputes: [],
     ...overrides,
@@ -114,6 +119,20 @@ describe("/commandes/[ref]", () => {
     expect(await screen.findByText("Payée")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Annuler la commande/ })).not.toBeInTheDocument();
     expect(screen.queryByText("Paiement en attente.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Payer maintenant/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("propose de payer depuis la bannière d'attente", async () => {
+    vi.mocked(getOrder).mockResolvedValue(makeOrder());
+    render(<DetailPage />);
+
+    const link = await screen.findByRole("link", { name: /Payer maintenant/ });
+    expect(link).toHaveAttribute(
+      "href",
+      "/commandes/ORD-2026-000042/paiement",
+    );
   });
 
   it("affiche une erreur quand la commande est introuvable", async () => {

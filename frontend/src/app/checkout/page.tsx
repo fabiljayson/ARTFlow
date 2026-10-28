@@ -97,7 +97,7 @@ export default function CheckoutPage() {
         crypto.randomUUID(),
       );
       window.dispatchEvent(new Event(CART_UPDATED_EVENT));
-      router.push(`/commandes/${result.order_reference}`);
+      router.push(`/commandes/${result.order_reference}/paiement`);
     } catch (error) {
       setActionError(
         error instanceof ApiError
