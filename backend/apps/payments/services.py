@@ -1,4 +1,5 @@
 """Payment state machine + external event ingestion (docs/payments.md §2)."""
+import json
 import logging
 
 from django.db import transaction
@@ -68,6 +69,39 @@ def apply_status(
     elif new_status in (Payment.Status.FAILED, Payment.Status.EXPIRED):
         release_order_after_payment_failure(order)
     return payment
+
+
+def mock_event_payload(
+    payment: Payment, provider_status: str, *, failure_reason: str = ""
+) -> dict:
+    """Corps webhook mock pour `payment` — `event_id` stable pour que le rejeu soit détecté."""
+    body = {
+        "event_id": f"mock:{payment.provider_reference}:{provider_status}",
+        "external_reference": payment.external_reference,
+        "status": provider_status,
+        "amount_xaf": payment.amount_xaf,
+    }
+    if failure_reason:
+        body["failure_reason"] = failure_reason
+    return body
+
+
+def deliver(payload: dict) -> dict:
+    """Livraison interne d'un webhook mock signé (simulateur — payments.md §5).
+
+    Passe par la même `ingest_event` que le webhook HTTP : idempotence et verrous
+    identiques, sans requête réseau.
+    """
+    raw = json.dumps(payload).encode()
+    logger.debug("mock webhook signé : %s", gateway.sign(raw))
+    return ingest_event(
+        event_id=payload["event_id"],
+        external_reference=payload["external_reference"],
+        status=payload["status"],
+        amount_xaf=payload["amount_xaf"],
+        payload=payload,
+        source="WEBHOOK",
+    )
 
 
 def initiate_payment(

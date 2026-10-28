@@ -5,8 +5,9 @@ import pytest
 from django.core.management import call_command
 from django.utils import timezone
 
-from apps.commerce.models import Order, StockReservation
+from apps.commerce.models import Order, Payment, StockReservation
 from apps.conftest import make_order
+from apps.core.models import PlatformSettings
 
 EXPIRE = "expire_stock_reservations"
 
@@ -86,3 +87,52 @@ class TestExpireReservations:
         order.refresh_from_db()
         assert order.status == Order.Status.PENDING_PAYMENT
         assert order.reservations.get().status == StockReservation.Status.ACTIVE
+
+    def test_expire_expires_stale_pending_payment(self, user, artwork_factory):
+        """Partie 2 (D3) : PENDING initié depuis TTL+16 min → EXPIRED + commande annulée."""
+        art = artwork_factory(title="Tentative périmée", price=10000, stock=3)
+        order = make_order(user, art, quantity=1)
+        payment = order.payments.get()
+        ttl = PlatformSettings.get().reservation_ttl_minutes
+        payment.status = Payment.Status.PENDING
+        payment.provider_reference = "MOCK-stale"
+        payment.initiated_at = timezone.now() - timedelta(minutes=ttl + 16)
+        payment.save(
+            update_fields=["status", "provider_reference", "initiated_at", "updated_at"]
+        )
+
+        call_command(EXPIRE)
+
+        order.refresh_from_db()
+        payment.refresh_from_db()
+        art.refresh_from_db()
+        assert payment.status == Payment.Status.EXPIRED
+        assert payment.failure_reason == "Délai de confirmation dépassé."
+        assert order.status == Order.Status.CANCELLED
+        assert order.reservations.get().status == StockReservation.Status.RELEASED
+        assert art.stock_quantity == 3  # jamais décrémenté
+
+    def test_expire_keeps_recent_pending_payment_on_expired_reservation(
+        self, user, artwork_factory
+    ):
+        """Réservation expirée mais tentative récente : commande annulée, PENDING préservé.
+
+        Le PENDING appartient au joueur/poll — le cron ne l'annule plus (payments.md §2.3).
+        """
+        art = artwork_factory(title="Récente", price=10000, stock=3)
+        order = make_order(user, art, quantity=1)
+        make_expired_reservation(order)
+        payment = order.payments.get()
+        payment.status = Payment.Status.PENDING
+        payment.provider_reference = "MOCK-recent"
+        payment.initiated_at = timezone.now() - timedelta(minutes=5)
+        payment.save(
+            update_fields=["status", "provider_reference", "initiated_at", "updated_at"]
+        )
+
+        call_command(EXPIRE)
+
+        order.refresh_from_db()
+        payment.refresh_from_db()
+        assert order.status == Order.Status.CANCELLED
+        assert payment.status == Payment.Status.PENDING

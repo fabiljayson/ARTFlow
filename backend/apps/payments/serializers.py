@@ -21,3 +21,19 @@ class InitiateSerializer(serializers.Serializer):
 
     phone = serializers.RegexField(regex=r"^\+237[6-9]\d{8}$")
     operator = serializers.ChoiceField(choices=("MTN", "ORANGE"))
+
+
+SIMULATE_SCENARIOS = (
+    "success",
+    "fail",
+    "timeout",
+    "webhook_lost_then_late",
+    "duplicate_webhook",
+)
+
+
+class SimulatePayloadSerializer(serializers.Serializer):
+    """Corps du simulateur sandbox — MOCK uniquement (payments.md §5)."""
+
+    external_reference = serializers.CharField(max_length=64)
+    scenario = serializers.ChoiceField(choices=SIMULATE_SCENARIOS)
