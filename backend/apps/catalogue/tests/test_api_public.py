@@ -203,3 +203,55 @@ class TestVideosFeed:
         data = client.get("/api/v1/videos/feed/").json()
         assert len(data) == 1
         assert data[0]["artwork_slug"] == art_pub.slug
+
+
+@pytest.mark.django_db
+class TestVerifiedBadge:
+    """Badge vérifié (design §1) : `status == APPROVED`.
+
+    Ruling : la liste `/catalog/artists/` reste filtrée APPROVED (choix produit
+    inchangé) — le `False` se prouve sur le serializer (unité) et là où un
+    non-approuvé est réellement visible : la fiche d'une œuvre d'artiste suspendu
+    (la suspension ne dépublie pas les œuvres).
+    """
+
+    def test_artist_is_verified_when_approved(self, client, artwork_factory):
+        artwork_factory(status=ArtworkStatus.PUBLISHED)
+        data = client.get(ARTISTS).json()
+        assert data["results"][0]["is_verified"] is True
+
+    def test_artist_not_verified_when_pending(self, user_factory, db):
+        from apps.artists.models import ApplicationStatus, ArtistProfile
+        from apps.catalogue.serializers import ArtistPublicSerializer
+
+        profile = ArtistProfile.objects.create(
+            user=user_factory(),
+            display_name="Sous",
+            city="Yaoundé",
+            status=ApplicationStatus.PENDING_REVIEW,
+        )
+        assert ArtistPublicSerializer(profile).data["is_verified"] is False
+
+    def test_artist_not_verified_when_suspended(self, user_factory, db):
+        from apps.artists.models import ApplicationStatus, ArtistProfile
+        from apps.catalogue.serializers import ArtistPublicSerializer
+
+        profile = ArtistProfile.objects.create(
+            user=user_factory(),
+            display_name="Suspendu",
+            city="Douala",
+            status=ApplicationStatus.SUSPENDED,
+        )
+        assert ArtistPublicSerializer(profile).data["is_verified"] is False
+
+    def test_artwork_summary_exposes_artist_verified(self, client, artwork_factory):
+        art = artwork_factory(status=ArtworkStatus.PUBLISHED)
+        assert client.get(detail(art.slug)).json()["artist_verified"] is True
+
+    def test_artwork_detail_artist_not_verified_when_suspended(self, client, artwork_factory):
+        from apps.artists.models import ApplicationStatus
+
+        art = artwork_factory(status=ArtworkStatus.PUBLISHED)
+        art.artist.status = ApplicationStatus.SUSPENDED
+        art.artist.save()
+        assert client.get(detail(art.slug)).json()["artist_verified"] is False

@@ -1,7 +1,7 @@
 """Catalogue serializers (public + artist space + moderation)."""
 from rest_framework import serializers
 
-from apps.artists.models import ArtistProfile
+from apps.artists.models import ApplicationStatus, ArtistProfile
 from apps.catalogue.models import Artwork, ArtworkMedia, ArtworkStatus, Category
 
 
@@ -55,6 +55,7 @@ class ArtworkSummarySerializer(serializers.ModelSerializer):
 
     artist_display_name = serializers.CharField(source="artist.display_name", read_only=True)
     artist_slug = serializers.CharField(source="artist.slug", read_only=True)
+    artist_verified = serializers.SerializerMethodField()
     primary_image_url = serializers.SerializerMethodField()
     is_available = serializers.BooleanField(read_only=True)
 
@@ -63,9 +64,12 @@ class ArtworkSummarySerializer(serializers.ModelSerializer):
         fields = [
             "id", "reference", "slug", "title", "price_xaf", "status",
             "stock_quantity", "is_available", "artist_display_name", "artist_slug",
-            "category", "primary_image_url", "published_at", "created_at",
+            "artist_verified", "category", "primary_image_url", "published_at", "created_at",
         ]
         read_only_fields = fields
+
+    def get_artist_verified(self, obj):
+        return obj.artist.status == ApplicationStatus.APPROVED
 
     def get_primary_image_url(self, obj):
         media = next((m for m in obj.media.all() if m.is_primary and m.kind == "IMAGE"), None)
@@ -126,14 +130,18 @@ class FavoriteToggleSerializer(serializers.Serializer):
 
 class ArtistPublicSerializer(serializers.ModelSerializer):
     artwork_count = serializers.SerializerMethodField()
+    is_verified = serializers.SerializerMethodField()
 
     class Meta:
         model = ArtistProfile
-        fields = ["slug", "display_name", "bio", "city", "region", "artwork_count"]
+        fields = ["slug", "display_name", "bio", "city", "region", "is_verified", "artwork_count"]
         read_only_fields = fields
 
     def get_artwork_count(self, obj):
         return obj.artworks.filter(status=ArtworkStatus.PUBLISHED).count()
+
+    def get_is_verified(self, obj):
+        return obj.status == ApplicationStatus.APPROVED
 
 
 class ArtistPublicDetailSerializer(ArtistPublicSerializer):
