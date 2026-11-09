@@ -23,6 +23,7 @@ from apps.catalogue.models import (
     Category,
     Favorite,
 )
+from apps.catalogue.queries import with_stats
 from apps.catalogue.serializers import (
     ArtistPublicDetailSerializer,
     ArtistPublicSerializer,
@@ -187,7 +188,7 @@ class CatalogArtworkList(generics.ListAPIView):
     serializer_class = ArtworkSummarySerializer
 
     def get_queryset(self):
-        qs = (
+        qs = with_stats(
             Artwork.objects.filter(status=ArtworkStatus.PUBLISHED)
             .select_related("artist", "category")
             .prefetch_related("media")
@@ -219,6 +220,8 @@ class CatalogArtworkList(generics.ListAPIView):
             "title": "title",
             "-title": "-title",
         }
+        if sort == "trending":
+            return qs.order_by("-trending_score", "-published_at")
         return qs.order_by(sort_map.get(sort, "-published_at"))
 
 

@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from apps.artists.models import ApplicationStatus, ArtistProfile
 from apps.catalogue.models import Artwork, ArtworkMedia, ArtworkStatus, Category
+from apps.catalogue.queries import artist_stats
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -56,6 +57,9 @@ class ArtworkSummarySerializer(serializers.ModelSerializer):
     artist_display_name = serializers.CharField(source="artist.display_name", read_only=True)
     artist_slug = serializers.CharField(source="artist.slug", read_only=True)
     artist_verified = serializers.SerializerMethodField()
+    favorite_count = serializers.IntegerField(read_only=True, default=0)
+    sold_count = serializers.IntegerField(read_only=True, default=0)
+    views_7d = serializers.IntegerField(read_only=True, default=0)
     primary_image_url = serializers.SerializerMethodField()
     is_available = serializers.BooleanField(read_only=True)
 
@@ -64,7 +68,7 @@ class ArtworkSummarySerializer(serializers.ModelSerializer):
         fields = [
             "id", "reference", "slug", "title", "price_xaf", "status",
             "stock_quantity", "is_available", "artist_display_name", "artist_slug",
-            "artist_verified", "category", "primary_image_url", "published_at", "created_at",
+            "artist_verified", "favorite_count", "sold_count", "views_7d", "category", "primary_image_url", "published_at", "created_at",
         ]
         read_only_fields = fields
 
@@ -131,10 +135,11 @@ class FavoriteToggleSerializer(serializers.Serializer):
 class ArtistPublicSerializer(serializers.ModelSerializer):
     artwork_count = serializers.SerializerMethodField()
     is_verified = serializers.SerializerMethodField()
+    stats = serializers.SerializerMethodField()
 
     class Meta:
         model = ArtistProfile
-        fields = ["slug", "display_name", "bio", "city", "region", "is_verified", "artwork_count"]
+        fields = ["slug", "display_name", "bio", "city", "region", "is_verified", "artwork_count", "stats"]
         read_only_fields = fields
 
     def get_artwork_count(self, obj):
@@ -142,6 +147,9 @@ class ArtistPublicSerializer(serializers.ModelSerializer):
 
     def get_is_verified(self, obj):
         return obj.status == ApplicationStatus.APPROVED
+
+    def get_stats(self, obj):
+        return artist_stats(obj)
 
 
 class ArtistPublicDetailSerializer(ArtistPublicSerializer):
