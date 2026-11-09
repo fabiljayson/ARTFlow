@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { listArtists } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -37,7 +38,10 @@ export default async function ArtistsPage() {
                 href={`/artistes/${artist.slug}`}
                 className="rounded-lg glass-card p-5"
               >
-                <h2 className="text-lg font-semibold text-text">{artist.display_name}</h2>
+                <h2 className="flex items-center gap-1.5 text-lg font-semibold text-text">
+                  <span>{artist.display_name}</span>
+                  {artist.is_verified ? <VerifiedBadge /> : null}
+                </h2>
                 {(artist.city || artist.region) && (
                   <p className="mt-1 text-sm text-text/70">
                     {[artist.city, artist.region].filter(Boolean).join(", ")}

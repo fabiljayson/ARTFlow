@@ -208,6 +208,7 @@ export interface ArtworkSummary {
   is_available: boolean;
   artist_display_name: string;
   artist_slug: string;
+  artist_verified: boolean;
   category: number;
   primary_image_url: string | null;
   published_at: string | null;
@@ -232,6 +233,7 @@ export interface ArtistPublic {
   bio: string;
   city: string;
   region: string;
+  is_verified: boolean;
   artwork_count: number;
 }
 

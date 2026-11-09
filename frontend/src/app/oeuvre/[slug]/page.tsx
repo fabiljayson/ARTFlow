@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { SimilarWorks } from "@/components/similar-works";
 import { ArtworkGallery } from "@/components/artwork-gallery";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { ApiError, getArtwork } from "@/lib/api";
 import { formatXAF } from "@/lib/money";
 
@@ -59,9 +60,10 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
 
           <Link
             href={`/artistes/${artwork.artist_slug}`}
-            className="mt-2 inline-block text-sm text-primary-strong hover:underline"
+            className="mt-2 inline-flex items-center gap-1.5 text-sm text-primary-strong hover:underline"
           >
             {artwork.artist_display_name}
+            {artwork.artist_verified ? <VerifiedBadge /> : null}
           </Link>
 
           <div className="mt-4 flex items-baseline gap-3">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArtworkCard } from "@/components/artwork-card";
 import { EmptyState } from "@/components/empty-state";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { ApiError, getArtist } from "@/lib/api";
 
 export async function generateMetadata({
@@ -44,7 +45,12 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       </nav>
 
       <header className="mt-6 border-b border-border/25 pb-6">
-        <h1 className="text-3xl font-bold text-primary-strong">{artist.display_name}</h1>
+        <h1 className="text-3xl font-bold text-primary-strong">
+          <span className="inline-flex items-center gap-2">
+            {artist.display_name}
+            {artist.is_verified ? <VerifiedBadge /> : null}
+          </span>
+        </h1>
         {(artist.city || artist.region) && (
           <p className="mt-1 text-text/70">
             {[artist.city, artist.region].filter(Boolean).join(", ")}

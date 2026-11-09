@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PriceTag } from "@/components/price-tag";
 import { MediaImage } from "@/components/media-image";
+import { VerifiedBadge } from "@/components/verified-badge";
 import type { ArtworkSummary } from "@/lib/api";
 
 /**
@@ -32,7 +33,10 @@ export function ArtworkCard({ artwork }: { artwork: ArtworkSummary }) {
 
       <div className="space-y-1 p-3">
         <p className="truncate text-sm font-semibold text-text">{artwork.title}</p>
-        <p className="truncate text-xs text-text/70">{artwork.artist_display_name}</p>
+        <p className="flex items-center gap-1 text-xs text-text/70">
+          <span className="truncate">{artwork.artist_display_name}</span>
+          {artwork.artist_verified ? <VerifiedBadge /> : null}
+        </p>
         <PriceTag amount={artwork.price_xaf} className="text-sm font-semibold text-primary-strong" />
       </div>
     </Link>

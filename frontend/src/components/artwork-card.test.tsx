@@ -15,6 +15,7 @@ function makeArtwork(overrides: Partial<ArtworkSummary> = {}): ArtworkSummary {
     is_available: true,
     artist_display_name: "Amina Ngo",
     artist_slug: "amina-ngo",
+    artist_verified: false,
     category: 2,
     primary_image_url: "/api/v1/catalog/artworks/masque-wouri/media/3/thumb/",
     published_at: "2026-10-27T00:00:00Z",
@@ -55,5 +56,17 @@ describe("ArtworkCard", () => {
     render(<ArtworkCard artwork={makeArtwork({ primary_image_url: null })} />);
 
     expect(screen.getByText("Masque du Wouri")).toBeInTheDocument();
+  });
+
+  it("affiche le badge vérifié à côté de l'artiste", () => {
+    render(<ArtworkCard artwork={makeArtwork({ artist_verified: true })} />);
+
+    expect(screen.getByLabelText("Artiste vérifié")).toBeInTheDocument();
+  });
+
+  it("n'affiche pas le badge si l'artiste n'est pas vérifié", () => {
+    render(<ArtworkCard artwork={makeArtwork({ artist_verified: false })} />);
+
+    expect(screen.queryByLabelText("Artiste vérifié")).not.toBeInTheDocument();
   });
 });
