@@ -6,6 +6,7 @@ import { SimilarWorks } from "@/components/similar-works";
 import { ArtworkGallery } from "@/components/artwork-gallery";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { VerifiedBadge } from "@/components/verified-badge";
+import { ViewTracker } from "@/components/view-tracker";
 import { ApiError, getArtwork } from "@/lib/api";
 import { formatXAF } from "@/lib/money";
 
@@ -135,6 +136,8 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
       <Suspense fallback={<div className="mt-14 h-48 animate-pulse rounded-lg bg-surface-muted" />}>
         <SimilarWorks slug={slug} />
       </Suspense>
+
+      <ViewTracker slug={slug} />
     </main>
   );
 }

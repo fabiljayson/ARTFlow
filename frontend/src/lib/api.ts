@@ -430,6 +430,14 @@ export function getSimilarArtworks(slug: string): Promise<ArtworkSummary[]> {
   return apiFetch(`/catalog/artworks/${encodeURIComponent(slug)}/similar/`);
 }
 
+/**
+ * Enregistre une vue de l'œuvre (cookie visiteur `af_visitor`, dédup 24 h côté
+ * serveur) — design preuve sociale §2. Silencieux : l'appelant ignore les erreurs.
+ */
+export function recordView(slug: string): Promise<{ view_count: number; counted: boolean }> {
+  return apiFetch(`/catalog/artworks/${encodeURIComponent(slug)}/view/`, { method: "POST" });
+}
+
 export function getArtist(slug: string): Promise<ArtistPublicDetail> {
   return apiFetch(`/catalog/artists/${encodeURIComponent(slug)}/`);
 }
