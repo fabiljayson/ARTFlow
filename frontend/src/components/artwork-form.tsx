@@ -70,10 +70,11 @@ export function ArtworkForm({
     }
   }
 
-  const inputClass = "mt-1 w-full rounded-md border border-border/40 bg-white px-3 py-2";
+  const inputClass =
+    "mt-1.5 w-full rounded-lg border border-border/30 bg-white/95 px-3.5 py-2.5 text-sm text-text shadow-xs placeholder:text-text/45 transition focus:border-primary focus:outline-none";
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-2xl rounded-2xl glass-strong p-6 sm:p-8 shadow-md space-y-4">
       <label className="block text-sm">
         <span className="text-text/70">Titre *</span>
         <input

@@ -209,6 +209,9 @@ export interface ArtworkSummary {
   artist_display_name: string;
   artist_slug: string;
   artist_verified: boolean;
+  favorite_count: number;
+  sold_count: number;
+  views_7d: number;
   category: number;
   primary_image_url: string | null;
   published_at: string | null;
@@ -235,6 +238,7 @@ export interface ArtistPublic {
   region: string;
   is_verified: boolean;
   artwork_count: number;
+  stats?: { works: number; sold: number; views: number; favorites: number };
 }
 
 export interface ArtistPublicDetail extends ArtistPublic {

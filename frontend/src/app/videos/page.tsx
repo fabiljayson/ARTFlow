@@ -13,12 +13,14 @@ export default async function VideosPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl font-bold text-primary-strong">Vidéos</h1>
-      <p className="mt-2 text-text/70">
-        {videos.length > 0
-          ? `${videos.length} vidéo${videos.length > 1 ? "s" : ""} publiée${videos.length > 1 ? "s" : ""}.`
-          : "Les vidéos des artistes arrivent bientôt."}
-      </p>
+      <div className="border-b border-border/20 pb-5">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Vidéos</h1>
+        <p className="mt-1.5 text-sm text-text/80">
+          {videos.length > 0
+            ? `${videos.length} vidéo${videos.length > 1 ? "s" : ""} publiée${videos.length > 1 ? "s" : ""}.`
+            : "Les vidéos des artistes arrivent bientôt."}
+        </p>
+      </div>
 
       <div className="mt-8">
         {videos.length === 0 ? (
@@ -33,9 +35,9 @@ export default async function VideosPage() {
             {videos.map((video) => (
               <article
                 key={video.id}
-                className="overflow-hidden rounded-lg glass-card"
+                className="overflow-hidden rounded-xl glass-card transition-all duration-200 hover:-translate-y-0.5"
               >
-                <div className="bg-black">
+                <div className="bg-black/90 aspect-video w-full overflow-hidden">
                   <video
                     controls
                     muted
@@ -43,7 +45,7 @@ export default async function VideosPage() {
                     preload="metadata"
                     poster={proxiedUrl(video.poster_url) ?? undefined}
                     aria-label={video.alt_text_fr || video.artwork_title}
-                    className="aspect-video w-full"
+                    className="h-full w-full object-cover"
                   >
                     <source
                       src={video.stream_url ?? undefined}
@@ -51,16 +53,16 @@ export default async function VideosPage() {
                     />
                   </video>
                 </div>
-                <div className="space-y-1 p-3">
+                <div className="space-y-1.5 p-4">
                   <Link
                     href={`/oeuvre/${video.artwork_slug}`}
-                    className="block truncate text-sm font-semibold text-text hover:text-primary-strong"
+                    className="block truncate text-sm font-bold text-primary-strong hover:text-primary transition-colors"
                   >
                     {video.artwork_title}
                   </Link>
                   <Link
                     href={`/artistes/${video.artist_slug}`}
-                    className="block truncate text-xs text-text/70 hover:text-primary-strong"
+                    className="block truncate text-xs font-medium text-text/75 hover:text-primary-strong transition-colors"
                   >
                     {video.artist_display_name}
                   </Link>

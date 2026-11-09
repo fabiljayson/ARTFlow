@@ -219,47 +219,48 @@ export default function PaiementPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-primary-strong">Payer la commande</h1>
-        <span className="rounded-full bg-surface-muted px-3 py-1 text-sm font-semibold text-text">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/20 pb-5">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Payer la commande</h1>
+        <span className="rounded-full glass-pill px-3.5 py-1 text-xs font-bold text-text/85">
           {order.reference}
         </span>
       </div>
 
-      <div className="glass-card mt-6 p-5">
-        <p className="text-sm text-text/75">Montant à régler</p>
-        <p className="text-3xl font-bold text-primary-strong">
+      <div className="rounded-2xl glass-card mt-6 p-6 shadow-sm border border-border/20">
+        <p className="text-xs font-semibold uppercase tracking-wider text-text/75">Montant à régler</p>
+        <p className="text-3xl font-extrabold text-primary-strong mt-1">
           {formatXAF(order.grand_total_xaf)}
         </p>
-        <p className="mt-1 text-xs text-text/60">{order.currency} · livraison incluse</p>
+        <p className="mt-1 text-xs text-text/70">{order.currency} · livraison incluse</p>
       </div>
 
       {paymentStatus === "PENDING" ? (
         <div className="mt-6 space-y-4">
           <div
             role="status"
-            className="rounded-md border border-warning/40 bg-warning/10 p-4 text-sm"
+            className="rounded-2xl border border-warning/40 bg-warning/10 p-5 text-sm shadow-sm"
           >
-            <p className="font-semibold ink-warning">En attente de confirmation…</p>
-            <p className="mt-1 text-text/80">
+            <p className="font-bold ink-warning">En attente de confirmation…</p>
+            <p className="mt-1 leading-relaxed text-text/85">
               Un message USSD vient d&apos;être envoyé sur votre téléphone. Confirmez la
               demande, cette page se met à jour toute seule.
             </p>
           </div>
 
           {mockSimulator ? (
-            <div className="glass-card p-5">
-              <p className="text-sm font-semibold text-text">
+            <div className="rounded-2xl glass-strong p-6 shadow-md border border-border/25">
+              <p className="text-sm font-bold text-primary-strong">
                 Mode démo — passerelle simulée
               </p>
-              <p className="mt-1 text-xs text-text/60">
+              <p className="mt-1 text-xs text-text/75">
                 Aucun paiement réel : déclenchez un scénario pour voir le cycle complet.
               </p>
-              <div className="mt-3 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 <Button
                   variant="secondary"
                   onClick={() => void handleSimulate("success")}
                   disabled={simulating}
+                  className="shadow-xs"
                 >
                   Simuler un paiement réussi
                 </Button>
@@ -267,6 +268,7 @@ export default function PaiementPage() {
                   variant="danger"
                   onClick={() => void handleSimulate("fail")}
                   disabled={simulating}
+                  className="shadow-xs"
                 >
                   Simuler un échec
                 </Button>
@@ -275,9 +277,9 @@ export default function PaiementPage() {
           ) : null}
         </div>
       ) : (
-        <form onSubmit={(event) => void handleInitiate(event)} className="glass-card mt-6 space-y-4 p-5">
+        <form onSubmit={(event) => void handleInitiate(event)} className="rounded-2xl glass-strong mt-6 space-y-4 p-6 shadow-md border border-border/25">
           <label className="block text-sm">
-            <span className="block text-text/75">Téléphone</span>
+            <span className="block font-medium text-text/80">Téléphone</span>
             <input
               id="phone"
               type="tel"
@@ -285,30 +287,32 @@ export default function PaiementPage() {
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               placeholder="+237690000001"
-              className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+              className="mt-1.5 w-full rounded-lg border border-border/30 bg-white/95 px-3.5 py-2.5 text-sm text-text shadow-xs placeholder:text-text/45 transition focus:border-primary focus:outline-none"
             />
           </label>
 
           <fieldset>
-            <legend className="text-sm text-text/75">Opérateur</legend>
+            <legend className="text-sm font-medium text-text/80">Opérateur</legend>
             <div className="mt-2 flex gap-4">
-              <label className="flex cursor-pointer items-center gap-2 rounded-md border border-border/40 bg-white/70 px-3 py-2 text-sm">
+              <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-border/30 bg-white/80 px-4 py-2.5 text-sm font-semibold hover:border-primary transition-colors">
                 <input
                   type="radio"
                   name="operator"
                   value="MTN"
                   checked={operator === "MTN"}
                   onChange={() => setOperator("MTN")}
+                  className="accent-primary cursor-pointer"
                 />
                 MTN
               </label>
-              <label className="flex cursor-pointer items-center gap-2 rounded-md border border-border/40 bg-white/70 px-3 py-2 text-sm">
+              <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-border/30 bg-white/80 px-4 py-2.5 text-sm font-semibold hover:border-primary transition-colors">
                 <input
                   type="radio"
                   name="operator"
                   value="ORANGE"
                   checked={operator === "ORANGE"}
                   onChange={() => setOperator("ORANGE")}
+                  className="accent-primary cursor-pointer"
                 />
                 ORANGE
               </label>
@@ -316,12 +320,12 @@ export default function PaiementPage() {
           </fieldset>
 
           {actionError ? (
-            <p role="alert" className="rounded-md bg-danger/10 p-3 text-sm font-semibold ink-danger">
+            <p role="alert" className="rounded-xl border border-danger/40 bg-danger/10 p-3.5 text-sm font-semibold ink-danger">
               {actionError}
             </p>
           ) : null}
 
-          <Button type="submit" disabled={initiating}>
+          <Button type="submit" disabled={initiating} className="w-full py-3 text-base shadow-md">
             {initiating ? "Demande en cours…" : "Payer"}
           </Button>
         </form>

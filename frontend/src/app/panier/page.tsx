@@ -100,10 +100,12 @@ export default function PanierPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-primary-strong">Panier</h1>
+      <div className="border-b border-border/20 pb-5">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Panier</h1>
+      </div>
 
       {isEmpty ? (
-        <div className="mt-6">
+        <div className="mt-8">
           <EmptyState
             title="Votre panier est vide"
             hint="Parcourez le catalogue pour découvrir les œuvres de nos artistes."
@@ -114,7 +116,7 @@ export default function PanierPage() {
       ) : (
         <>
           {actionError ? (
-            <p role="alert" className="mt-4 rounded-md bg-danger/10 p-3 text-sm font-semibold ink-danger">
+            <p role="alert" className="mt-6 rounded-xl border border-danger/40 bg-danger/10 p-3.5 text-sm font-semibold ink-danger">
               {actionError}
             </p>
           ) : null}
@@ -131,31 +133,31 @@ export default function PanierPage() {
             ))}
           </ul>
 
-          <section className="glass-card mt-6 space-y-3 p-5" aria-label="Récapitulatif">
-            <div className="flex justify-between text-sm text-text/75">
-              <span>Articles ({cart?.items_count ?? 0})</span>
+          <section className="glass-strong rounded-2xl mt-8 space-y-3.5 p-6 shadow-md" aria-label="Récapitulatif">
+            <div className="flex justify-between text-sm text-text/80">
+              <span className="font-medium">Articles ({cart?.items_count ?? 0})</span>
               <span className="font-semibold text-text">{formatXAF(cart?.items_total_xaf ?? 0)}</span>
             </div>
-            <div className="flex justify-between text-sm text-text/75">
-              <span>Livraison</span>
-              <span>Calculée au checkout</span>
+            <div className="flex justify-between text-sm text-text/80">
+              <span className="font-medium">Livraison</span>
+              <span className="italic">Calculée au checkout</span>
             </div>
-            <div className="flex justify-between border-t border-border/30 pt-3">
-              <span className="font-semibold text-text">Sous-total</span>
-              <span className="text-lg font-bold text-primary-strong">
+            <div className="flex justify-between border-t border-border/20 pt-3.5">
+              <span className="font-bold text-text">Sous-total</span>
+              <span className="text-xl font-extrabold text-primary-strong">
                 {formatXAF(cart?.items_total_xaf ?? 0)}
               </span>
             </div>
-            <Button className="w-full" onClick={() => router.push("/checkout")}>
+            <Button className="w-full py-3 text-base shadow-md" onClick={() => router.push("/checkout")}>
               Passer la commande
             </Button>
-            <p className="text-center text-xs text-text/70">
+            <p className="text-center text-xs text-text/75">
               Le paiement arrive en phase suivante — vous ne serez pas débité pour
               l&apos;instant.
             </p>
             <Link
               href="/catalogue"
-              className="block text-center text-sm font-semibold text-primary-strong hover:underline"
+              className="block text-center text-sm font-semibold text-primary-strong hover:text-primary transition-colors"
             >
               Continuer mes achats
             </Link>

@@ -36,35 +36,43 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <nav aria-label="Fil d'ariane" className="text-sm text-text/70">
-        <Link href="/artistes" className="hover:text-primary-strong">
+      <nav aria-label="Fil d'ariane" className="text-sm font-medium text-text/75">
+        <Link href="/artistes" className="hover:text-primary-strong transition-colors">
           Artistes
         </Link>
-        <span aria-hidden="true"> / </span>
-        <span className="text-text/80">{artist.display_name}</span>
+        <span aria-hidden="true" className="mx-1 text-border/40">/</span>
+        <span className="text-primary-strong">{artist.display_name}</span>
       </nav>
 
-      <header className="mt-6 border-b border-border/25 pb-6">
-        <h1 className="text-3xl font-bold text-primary-strong">
+      <header className="mt-6 rounded-2xl glass-strong p-6 sm:p-8 shadow-md">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong sm:text-4xl">
           <span className="inline-flex items-center gap-2">
             {artist.display_name}
             {artist.is_verified ? <VerifiedBadge /> : null}
           </span>
         </h1>
         {(artist.city || artist.region) && (
-          <p className="mt-1 text-text/70">
+          <p className="mt-1 text-sm font-medium text-text/80">
             {[artist.city, artist.region].filter(Boolean).join(", ")}
           </p>
         )}
-        {artist.bio ? <p className="mt-4 max-w-2xl leading-relaxed text-text/80">{artist.bio}</p> : null}
-        <p className="mt-3 text-sm font-medium text-primary-strong">
-          {artist.artwork_count} œuvre{artist.artwork_count > 1 ? "s" : ""} publiée
-          {artist.artwork_count > 1 ? "s" : ""}
-        </p>
+        {artist.bio ? <p className="mt-4 max-w-2xl leading-relaxed text-text/85">{artist.bio}</p> : null}
+        <div className="mt-6 flex flex-wrap gap-2.5" aria-label="Statistiques de l’artiste">
+          {[
+            [`${artist.stats?.works ?? artist.artwork_count} œuvres`, "œuvres publiées"],
+            [`${artist.stats?.sold ?? 0} vendues`, "ventes confirmées"],
+            [`${artist.stats?.views ?? 0} vues`, "vues cumulées"],
+            [`${artist.stats?.favorites ?? 0} favoris`, "ajouts aux favoris"],
+          ].map(([value, label]) => (
+            <span key={label} title={label} className="glass-pill px-3.5 py-1.5 text-xs font-bold text-primary-strong">
+              {value}
+            </span>
+          ))}
+        </div>
       </header>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-text">Œuvres</h2>
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-primary-strong">Œuvres</h2>
         {artist.artworks.length === 0 ? (
           <div className="mt-4">
             <EmptyState

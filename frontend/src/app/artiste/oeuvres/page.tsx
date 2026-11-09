@@ -86,45 +86,45 @@ function ArtworkList() {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-border/25">
+    <div className="overflow-x-auto rounded-xl glass-strong border border-border/25 shadow-md">
       <table className="w-full min-w-[720px] text-sm">
-        <thead className="bg-surface-muted/60 text-left text-xs uppercase tracking-wide text-text/75">
+        <thead className="bg-surface-muted/70 text-left text-xs uppercase tracking-wider text-primary-strong">
           <tr>
-            <th className="px-4 py-3 font-semibold">Œuvre</th>
-            <th className="px-4 py-3 font-semibold">Prix</th>
-            <th className="px-4 py-3 font-semibold">Stock</th>
-            <th className="px-4 py-3 font-semibold">Statut</th>
-            <th className="px-4 py-3 text-right font-semibold">Actions</th>
+            <th className="px-4 py-3.5 font-bold">Œuvre</th>
+            <th className="px-4 py-3.5 font-bold">Prix</th>
+            <th className="px-4 py-3.5 font-bold">Stock</th>
+            <th className="px-4 py-3.5 font-bold">Statut</th>
+            <th className="px-4 py-3.5 text-right font-bold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border/20 bg-white/70">
+        <tbody className="divide-y divide-border/15 bg-white/75">
           {items.map((artwork) => (
-            <tr key={artwork.id}>
-              <td className="px-4 py-3">
+            <tr key={artwork.id} className="hover:bg-surface-muted/20 transition-colors">
+              <td className="px-4 py-3.5">
                 <Link
                   href={`/artiste/oeuvres/${artwork.id}`}
-                  className="font-medium text-text hover:text-primary-strong"
+                  className="font-semibold text-text hover:text-primary-strong transition-colors"
                 >
                   {artwork.title}
                 </Link>
-                  <p className="text-xs text-text/70">{artwork.reference}</p>
+                <p className="text-xs text-text/70">{artwork.reference}</p>
               </td>
-              <td className="px-4 py-3">{formatXAF(artwork.price_xaf)}</td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5 font-bold text-primary-strong">{formatXAF(artwork.price_xaf)}</td>
+              <td className="px-4 py-3.5">
                 {artwork.stock_quantity === 0 ? (
-                  <span className="font-medium text-danger">0</span>
+                  <span className="font-bold text-danger">0</span>
                 ) : (
-                  artwork.stock_quantity
+                  <span className="font-semibold text-text">{artwork.stock_quantity}</span>
                 )}
               </td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5">
                 <StatusBadge status={artwork.status} />
               </td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5">
                 <div className="flex flex-wrap justify-end gap-2">
                   <Link
                     href={`/artiste/oeuvres/${artwork.id}`}
-                    className="rounded-md border border-border/40 px-2.5 py-1 text-xs font-medium transition hover:bg-surface-muted"
+                    className="glass-pill px-3 py-1 text-xs font-semibold text-text/85 hover:border-primary hover:text-primary-strong"
                   >
                     Modifier
                   </Link>
@@ -134,7 +134,7 @@ function ArtworkList() {
                   artwork.status === "HIDDEN" ? (
                     <Button
                       variant="primary"
-                      className="px-2.5 py-1 text-xs"
+                      className="px-3 py-1 text-xs shadow-xs"
                       disabled={busy === artwork.id}
                       onClick={() => void runAction(artwork.id, "publish")}
                     >
@@ -145,7 +145,7 @@ function ArtworkList() {
                   {artwork.status === "PUBLISHED" ? (
                     <Button
                       variant="secondary"
-                      className="px-2.5 py-1 text-xs"
+                      className="px-3 py-1 text-xs"
                       disabled={busy === artwork.id}
                       onClick={() => void runAction(artwork.id, "unpublish")}
                     >
@@ -156,7 +156,7 @@ function ArtworkList() {
                   {artwork.status !== "ARCHIVED" && artwork.status !== "PUBLISHED" ? (
                     <Button
                       variant="danger"
-                      className="px-2.5 py-1 text-xs"
+                      className="px-3 py-1 text-xs"
                       disabled={busy === artwork.id}
                       onClick={() => void runAction(artwork.id, "archive")}
                     >
@@ -177,14 +177,14 @@ export default function MyArtworksPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <RequireAuth role="artist">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/20 pb-5">
           <div>
-            <h1 className="text-3xl font-bold text-primary-strong">Mes œuvres</h1>
-            <p className="mt-2 text-text/70">Gérez vos fiches, images et soumissions.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Mes œuvres</h1>
+            <p className="mt-1.5 text-sm text-text/80">Gérez vos fiches, images et soumissions.</p>
           </div>
           <Link
             href="/artiste/oeuvres/nouvelle"
-            className="btn btn-primary px-4 py-2 text-sm"
+            className="btn btn-primary px-4 py-2 text-sm shadow-sm"
           >
             Nouvelle œuvre
           </Link>

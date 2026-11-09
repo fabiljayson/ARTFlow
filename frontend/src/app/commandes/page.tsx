@@ -60,10 +60,12 @@ export default function CommandesPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-primary-strong">Mes commandes</h1>
+      <div className="border-b border-border/20 pb-5">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Mes commandes</h1>
+      </div>
 
       {orders.length === 0 ? (
-        <div className="mt-6">
+        <div className="mt-8">
           <EmptyState
             title="Aucune commande"
             hint="Vos commandes apparaîtront ici une fois confirmées."
@@ -72,16 +74,16 @@ export default function CommandesPage() {
           />
         </div>
       ) : (
-        <ul className="mt-6 space-y-3">
+        <ul className="mt-6 space-y-3.5">
           {orders.map((order) => (
             <li key={order.reference}>
               <Link
                 href={`/commandes/${order.reference}`}
-                className="glass-card flex flex-wrap items-center justify-between gap-3 p-4 hover:border-primary/50"
+                className="glass-card rounded-xl flex flex-wrap items-center justify-between gap-3 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/60 shadow-xs"
               >
                 <span>
-                  <span className="block font-semibold text-primary-strong">{order.reference}</span>
-                  <span className="block text-xs text-text/60">
+                  <span className="block font-bold text-primary-strong">{order.reference}</span>
+                  <span className="block text-xs text-text/70 mt-0.5">
                     {new Date(order.placed_at).toLocaleDateString("fr-FR", {
                       day: "2-digit",
                       month: "long",
@@ -92,10 +94,10 @@ export default function CommandesPage() {
                   </span>
                 </span>
                 <span className="text-right">
-                  <span className="block font-semibold text-text">
+                  <span className="block font-extrabold text-primary-strong text-base">
                     {formatXAF(order.grand_total_xaf)}
                   </span>
-                  <span className={`block text-xs font-semibold ${orderStatusInk(order.status)}`}>
+                  <span className={`inline-block rounded-full glass-pill px-2.5 py-0.5 text-xs font-bold mt-1 ${orderStatusInk(order.status)}`}>
                     {orderStatusLabel(order.status)}
                   </span>
                 </span>

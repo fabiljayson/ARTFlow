@@ -97,10 +97,10 @@ function ModerationList() {
             type="button"
             onClick={() => setStatus(filter.value)}
             aria-pressed={status === filter.value}
-            className={`rounded-full border px-3 py-1.5 text-sm transition ${
+            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${
               status === filter.value
-                ? "border-primary-strong bg-primary-strong text-white shadow-sm"
-                : "border-border/40 bg-white/70 text-text/70 hover:bg-surface-muted"
+                ? "btn-primary shadow-sm"
+                : "glass-pill text-text/85 hover:border-primary hover:text-primary-strong"
             }`}
           >
             {filter.label}

@@ -1,5 +1,5 @@
-/** Libellés FR des statuts de commande (mirroir de apps/commerce/models.py). */
 const ORDER_STATUS_LABELS: Record<string, string> = {
+  // Libellés FR des statuts de commande (mirroir de apps/commerce/models.py).
   PENDING_PAYMENT: "En attente de paiement",
   PAID: "Payée",
   PROCESSING: "En préparation",
@@ -14,7 +14,7 @@ export function orderStatusLabel(status: string): string {
   return ORDER_STATUS_LABELS[status] ?? status;
 }
 
-/** Classe d'encre selon le statut (tokens Clay). */
+/** Classe d'encre selon le statut (tokens ARTFlow Warm Amber DESIGN.md). */
 export function orderStatusInk(status: string): string {
   switch (status) {
     case "PENDING_PAYMENT":

@@ -93,10 +93,10 @@ export default function CommandeDetailPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-primary-strong">Commande {order.reference}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/20 pb-5">
+        <h1 className="text-3xl font-bold tracking-tight text-primary-strong">Commande {order.reference}</h1>
         <span
-          className={`rounded-full bg-surface-muted px-3 py-1 text-sm font-semibold ${orderStatusInk(order.status)}`}
+          className={`rounded-full glass-pill px-3.5 py-1 text-sm font-bold shadow-xs ${orderStatusInk(order.status)}`}
         >
           {orderStatusLabel(order.status)}
         </span>
@@ -105,17 +105,17 @@ export default function CommandeDetailPage() {
       {canCancel ? (
         <div
           role="status"
-          className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-4 text-sm"
+          className="mt-6 rounded-2xl border border-warning/40 bg-warning/10 p-5 text-sm shadow-sm"
         >
-          <p className="font-semibold ink-warning">Paiement en attente.</p>
-          <p className="mt-1 text-text/80">
+          <p className="font-bold ink-warning">Paiement en attente.</p>
+          <p className="mt-1 leading-relaxed text-text/85">
             Cette commande n&apos;est pas encore payée : les articles sont réservés
             temporairement. Vous pouvez l&apos;annuler tant que le paiement n&apos;est pas
             effectué.
           </p>
           <Link
             href={`/commandes/${order.reference}/paiement`}
-            className="btn btn-primary mt-3 inline-flex px-4 py-2 text-sm"
+            className="btn btn-primary mt-4 inline-flex px-5 py-2.5 text-sm shadow-md"
           >
             Payer maintenant
           </Link>
@@ -123,81 +123,81 @@ export default function CommandeDetailPage() {
       ) : null}
 
       {actionError ? (
-        <p role="alert" className="mt-4 rounded-md bg-danger/10 p-3 text-sm font-semibold ink-danger">
+        <p role="alert" className="mt-4 rounded-xl border border-danger/40 bg-danger/10 p-3.5 text-sm font-semibold ink-danger">
           {actionError}
         </p>
       ) : null}
 
-      <section className="glass-card mt-6 space-y-3 p-5" aria-labelledby="order-items">
-        <h2 id="order-items" className="font-semibold text-primary-strong">
+      <section className="glass-strong rounded-2xl mt-6 space-y-4 p-6 shadow-md" aria-labelledby="order-items">
+        <h2 id="order-items" className="text-lg font-bold text-primary-strong">
           Articles ({order.items.length})
         </h2>
         <ul className="space-y-3">
           {order.items.map((item) => (
             <li key={item.id} className="flex justify-between gap-3 text-sm">
-              <span className="text-text">
+              <span className="text-text font-medium">
                 {item.title_snapshot}
-                <span className="block text-xs text-text/60">
+                <span className="block text-xs text-text/70">
                   {item.artist.display_name} · ×{item.quantity}
                 </span>
               </span>
-              <span className="font-semibold text-text">{formatXAF(item.line_total_xaf)}</span>
+              <span className="font-bold text-primary-strong">{formatXAF(item.line_total_xaf)}</span>
             </li>
           ))}
         </ul>
-        <div className="space-y-1 border-t border-border/30 pt-3 text-sm text-text/75">
+        <div className="space-y-1.5 border-t border-border/20 pt-3.5 text-sm text-text/80">
           <div className="flex justify-between">
             <span>Articles</span>
-            <span>{formatXAF(order.subtotal_items_xaf)}</span>
+            <span className="font-semibold text-text">{formatXAF(order.subtotal_items_xaf)}</span>
           </div>
           <div className="flex justify-between">
             <span>Livraison</span>
-            <span>{formatXAF(order.shipping_total_xaf)}</span>
+            <span className="font-semibold text-text">{formatXAF(order.shipping_total_xaf)}</span>
           </div>
-          <div className="flex justify-between border-t border-border/30 pt-3 font-semibold text-text">
-            <span>Total</span>
-            <span className="text-lg font-bold text-primary-strong">
+          <div className="flex justify-between border-t border-border/20 pt-3 font-bold text-text">
+            <span className="text-base">Total</span>
+            <span className="text-xl font-extrabold text-primary-strong">
               {formatXAF(order.grand_total_xaf)}
             </span>
           </div>
         </div>
       </section>
 
-      <section className="glass-card mt-6 space-y-2 p-5 text-sm" aria-labelledby="order-shipping">
-        <h2 id="order-shipping" className="font-semibold text-primary-strong">
+      <section className="glass-strong rounded-2xl mt-6 space-y-3 p-6 text-sm shadow-md" aria-labelledby="order-shipping">
+        <h2 id="order-shipping" className="text-lg font-bold text-primary-strong">
           Livraison
         </h2>
-        <p className="text-text/80">
+        <p className="text-text/85">
           {address.recipient_name ?? "—"} — {address.line1 ?? ""}
           {address.line2 ? `, ${address.line2}` : ""}
         </p>
-        <p className="text-text/80">
+        <p className="text-text/85">
           {address.city ?? ""}
           {address.region ? `, ${address.region}` : ""}
           {address.phone ? ` · ${address.phone}` : ""}
         </p>
         {order.buyer_note ? (
-          <p className="text-text/70 italic">Note : {order.buyer_note}</p>
+          <p className="text-text/75 italic border-t border-border/20 pt-2">Note : {order.buyer_note}</p>
         ) : null}
         {order.payment ? (
-          <p className="text-text/70">
+          <p className="text-text/80 border-t border-border/20 pt-2">
             Paiement : {order.payment.provider} — {order.payment.status}
           </p>
         ) : null}
       </section>
 
-      <section className="mt-6 flex flex-wrap gap-3">
+      <section className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/commandes"
+          className="text-sm font-semibold text-primary-strong hover:text-primary transition-colors"
+        >
+          ← Retour à mes commandes
+        </Link>
         {canCancel ? (
-          <Button variant="danger" onClick={() => void handleCancel()} disabled={busy}>
+          <Button variant="danger" onClick={() => void handleCancel()} disabled={busy} className="shadow-sm">
             {busy ? "Annulation…" : "Annuler la commande"}
           </Button>
         ) : null}
-        <Link
-          href="/commandes"
-          className="inline-flex items-center rounded-md border border-border/50 px-4 py-2 text-sm font-semibold text-text hover:bg-surface-muted"
-        >
-          Retour à mes commandes
-        </Link>
       </section>
     </main>
   );

@@ -170,34 +170,34 @@ export default function CheckoutPage() {
             </div>
           ) : null}
 
-          <section className="glass-card mt-6 space-y-4 p-5" aria-labelledby="checkout-address">
-            <h2 id="checkout-address" className="font-semibold text-primary-strong">
+          <section className="glass-strong rounded-2xl mt-6 space-y-4 p-6 shadow-md" aria-labelledby="checkout-address">
+            <h2 id="checkout-address" className="text-lg font-bold text-primary-strong">
               Adresse de livraison
             </h2>
 
             {addresses.length > 0 ? (
               <fieldset>
                 <legend className="sr-only">Choisir une adresse</legend>
-                <ul className="space-y-2">
+                <ul className="space-y-2.5">
                   {addresses.map((address) => (
                     <li key={address.id}>
-                      <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border/40 bg-white/70 p-3 hover:border-primary/50">
+                      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border/30 bg-white/80 p-3.5 hover:border-primary transition-colors">
                         <input
                           type="radio"
                           name="address"
                           value={address.id}
                           checked={addressId === address.id}
                           onChange={() => setAddressId(address.id)}
-                          className="mt-1"
+                          className="mt-1 accent-primary cursor-pointer"
                         />
                         <span className="text-sm">
-                          <span className="block font-semibold text-text">
+                          <span className="block font-bold text-primary-strong">
                             {address.label}
                             {address.is_default ? (
-                              <span className="ml-2 text-xs text-text/60">(défaut)</span>
+                              <span className="ml-2 rounded-full glass-pill px-2 py-0.5 text-[10px] font-semibold text-text/75">(défaut)</span>
                             ) : null}
                           </span>
-                          <span className="block text-text/75">
+                          <span className="block text-text/85">
                             {address.recipient_name} — {address.line1}
                             {address.line2 ? `, ${address.line2}` : ""}
                           </span>
@@ -212,80 +212,80 @@ export default function CheckoutPage() {
                 </ul>
               </fieldset>
             ) : (
-              <p className="text-sm text-text/70">Aucune adresse enregistrée pour l&apos;instant.</p>
+              <p className="text-sm text-text/75">Aucune adresse enregistrée pour l&apos;instant.</p>
             )}
 
             {showForm ? (
-              <form onSubmit={(event) => void handleCreateAddress(event)} className="space-y-3">
-                <p className="text-sm font-semibold text-text">Ajouter une adresse</p>
+              <form onSubmit={(event) => void handleCreateAddress(event)} className="space-y-3.5 pt-2">
+                <p className="text-sm font-bold text-primary-strong">Ajouter une adresse</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="text-sm">
-                    <span className="block text-text/75">Libellé</span>
+                    <span className="block font-medium text-text/80">Libellé</span>
                     <input
                       required
                       value={form.label}
                       onChange={(e) => setForm({ ...form, label: e.target.value })}
                       placeholder="Maison"
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm">
-                    <span className="block text-text/75">Destinataire</span>
+                    <span className="block font-medium text-text/80">Destinataire</span>
                     <input
                       required
                       value={form.recipient_name}
                       onChange={(e) => setForm({ ...form, recipient_name: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm sm:col-span-2">
-                    <span className="block text-text/75">Rue</span>
+                    <span className="block font-medium text-text/80">Rue</span>
                     <input
                       required
                       value={form.line1}
                       onChange={(e) => setForm({ ...form, line1: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm sm:col-span-2">
-                    <span className="block text-text/75">Complément (optionnel)</span>
+                    <span className="block font-medium text-text/80">Complément (optionnel)</span>
                     <input
                       value={form.line2}
                       onChange={(e) => setForm({ ...form, line2: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm">
-                    <span className="block text-text/75">Ville</span>
+                    <span className="block font-medium text-text/80">Ville</span>
                     <input
                       required
                       value={form.city}
                       onChange={(e) => setForm({ ...form, city: e.target.value })}
                       placeholder="Douala"
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm">
-                    <span className="block text-text/75">Région (optionnel)</span>
+                    <span className="block font-medium text-text/80">Région (optionnel)</span>
                     <input
                       value={form.region}
                       onChange={(e) => setForm({ ...form, region: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                   <label className="text-sm">
-                    <span className="block text-text/75">Téléphone</span>
+                    <span className="block font-medium text-text/80">Téléphone</span>
                     <input
                       required
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder="6XXXXXXXX"
-                      className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                      className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
                     />
                   </label>
                 </div>
-                <div className="flex gap-3">
-                  <Button type="submit" variant="secondary" disabled={busy}>
+                <div className="flex gap-3 pt-2">
+                  <Button type="submit" variant="secondary" disabled={busy} className="shadow-xs">
                     Enregistrer l&apos;adresse
                   </Button>
                   {addresses.length > 0 ? (
@@ -304,78 +304,78 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(true)}
-                className="text-sm font-semibold text-primary-strong hover:underline"
+                className="text-sm font-semibold text-primary-strong hover:text-primary transition-colors cursor-pointer"
               >
                 + Ajouter une adresse
               </button>
             )}
           </section>
 
-          <section className="glass-card mt-6 space-y-3 p-5" aria-labelledby="checkout-items">
-            <h2 id="checkout-items" className="font-semibold text-primary-strong">
+          <section className="glass-strong rounded-2xl mt-6 space-y-4 p-6 shadow-md" aria-labelledby="checkout-items">
+            <h2 id="checkout-items" className="text-lg font-bold text-primary-strong">
               Articles ({quote?.items_count ?? 0})
             </h2>
             <ul className="space-y-3">
               {quote?.items.map((item) => (
                 <li key={item.artwork_id} className="flex justify-between gap-3 text-sm">
-                  <span className="text-text">
+                  <span className="text-text font-medium">
                     {item.title}
-                    <span className="block text-xs text-text/60">
+                    <span className="block text-xs text-text/70">
                       {item.artist.display_name} · ×{item.quantity}
                     </span>
                   </span>
-                  <span className="font-semibold text-text">{formatXAF(item.line_total_xaf)}</span>
+                  <span className="font-bold text-primary-strong">{formatXAF(item.line_total_xaf)}</span>
                 </li>
               ))}
             </ul>
-            <div className="space-y-1 border-t border-border/30 pt-3 text-sm text-text/75">
+            <div className="space-y-1.5 border-t border-border/20 pt-3.5 text-sm text-text/80">
               <div className="flex justify-between">
                 <span>Articles</span>
-                <span>{formatXAF(quote?.subtotal_items_xaf ?? 0)}</span>
+                <span className="font-semibold text-text">{formatXAF(quote?.subtotal_items_xaf ?? 0)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Livraison</span>
-                <span>{formatXAF(quote?.shipping_total_xaf ?? 0)}</span>
+                <span className="font-semibold text-text">{formatXAF(quote?.shipping_total_xaf ?? 0)}</span>
               </div>
-              <div className="flex justify-between border-t border-border/30 pt-3 font-semibold text-text">
-                <span>Total</span>
-                <span className="text-lg font-bold text-primary-strong">
+              <div className="flex justify-between border-t border-border/20 pt-3 font-bold text-text">
+                <span className="text-base">Total</span>
+                <span className="text-xl font-extrabold text-primary-strong">
                   {formatXAF(quote?.grand_total_xaf ?? 0)}
                 </span>
               </div>
             </div>
           </section>
 
-          <section className="glass-card mt-6 space-y-3 p-5" aria-labelledby="checkout-confirm">
-            <h2 id="checkout-confirm" className="font-semibold text-primary-strong">
+          <section className="glass-strong rounded-2xl mt-6 space-y-4 p-6 shadow-md" aria-labelledby="checkout-confirm">
+            <h2 id="checkout-confirm" className="text-lg font-bold text-primary-strong">
               Confirmation
             </h2>
             <label className="block text-sm">
-              <span className="block text-text/75">Note pour le vendeur (optionnel)</span>
+              <span className="block font-medium text-text/80">Note pour le vendeur (optionnel)</span>
               <textarea
                 value={buyerNote}
                 onChange={(e) => setBuyerNote(e.target.value)}
                 rows={2}
-                className="mt-1 w-full rounded-md border border-border/50 bg-white/80 px-3 py-2"
+                className="mt-1 w-full rounded-lg border border-border/30 bg-white/95 px-3.5 py-2 text-sm text-text shadow-xs transition focus:border-primary focus:outline-none"
               />
             </label>
             <Button
               onClick={() => void handleConfirm()}
               disabled={busy || hasBlocking || addressId === null}
-              className="w-full"
+              className="w-full py-3 text-base shadow-md"
             >
               {busy ? "Confirmation…" : "Confirmer la commande"}
             </Button>
             {addressId === null && addresses.length === 0 && !showForm ? (
-              <p className="text-center text-xs ink-danger">Ajoutez une adresse pour continuer.</p>
+              <p className="text-center text-xs font-semibold ink-danger">Ajoutez une adresse pour continuer.</p>
             ) : null}
-            <p className="text-center text-xs text-text/70">
+            <p className="text-center text-xs text-text/75">
               Le paiement arrive en phase suivante — vous ne serez pas débité pour
               l&apos;instant.
             </p>
             <Link
               href="/panier"
-              className="block text-center text-sm font-semibold text-primary-strong hover:underline"
+              className="block text-center text-sm font-semibold text-primary-strong hover:text-primary transition-colors"
             >
               Retour au panier
             </Link>
