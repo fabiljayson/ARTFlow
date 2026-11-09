@@ -143,6 +143,7 @@ REST_FRAMEWORK = {
         "auth-register": "5/h",
         "checkout": "20/h",  # docs/api.md §1 : checkout 20/h/user
         "payment-initiate": "30/h",  # docs/api.md §1 : initiation de paiement 30/h/user
+        "artwork-view": "120/min",  # design preuve sociale §2 : tracking de vues
     },
 }
 

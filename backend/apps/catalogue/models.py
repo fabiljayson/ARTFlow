@@ -52,6 +52,7 @@ class Artwork(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="artworks")
     price_xaf = models.BigIntegerField(validators=[MinValueValidator(1)])
     stock_quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(0)])
+    view_count = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=20, choices=ArtworkStatus.choices, default=ArtworkStatus.DRAFT)
     refusal_reason = models.TextField(blank=True)
     moderation_note = models.TextField(blank=True)
@@ -147,3 +148,24 @@ class Favorite(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=["user", "artwork"], name="uniq_user_artwork_favorite")]
         indexes = [models.Index(fields=["user"])]
+
+
+class ArtworkView(models.Model):
+    """Événement de vue dédupliqué par visiteur sur 24 h (design preuve sociale §2).
+
+    `created_at` a pour défaut `timezone.now` (et non `auto_now_add`) : le seed et
+    les tests doivent pouvoir dater les événements dans le passé.
+    """
+
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, related_name="views")
+    viewer_key = models.CharField(max_length=32)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["artwork", "viewer_key", "created_at"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+    def __str__(self):
+        return f"Vue {self.artwork_id} · {self.viewer_key[:8]}"

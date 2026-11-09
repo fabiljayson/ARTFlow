@@ -1,15 +1,28 @@
 """Catalogue API views — public read, artist CRUD, moderation (docs/api.md §3/§5/§8)."""
-from django.db.models import Q
+import hashlib
+import secrets
+from datetime import timedelta
+
+from django.db.models import F, Q
 from django.http import FileResponse, Http404
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from apps.artists.models import ApplicationStatus, ArtistProfile
 from apps.catalogue import media_service, workflows
-from apps.catalogue.models import Artwork, ArtworkMedia, ArtworkStatus, Category, Favorite
+from apps.catalogue.models import (
+    Artwork,
+    ArtworkMedia,
+    ArtworkStatus,
+    ArtworkView,
+    Category,
+    Favorite,
+)
 from apps.catalogue.serializers import (
     ArtistPublicDetailSerializer,
     ArtistPublicSerializer,
@@ -241,6 +254,50 @@ class CatalogArtworkSimilar(generics.ListAPIView):
             .prefetch_related("media")
             .order_by("-published_at")[:6]
         )
+
+
+class ArtworkViewTrack(APIView):
+    """POST /catalog/artworks/{slug}/view/ — compteur de vues (design preuve sociale §2).
+
+    Cookie visiteur opaque `af_visitor` (HttpOnly) ; le jeton brut n'est jamais
+    stocké — seule l'empreinte sha256[:32] sert de `viewer_key`. Dé-dup 24 h par
+    (artwork, viewer_key).
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "artwork-view"
+
+    def post(self, request, slug):
+        artwork = Artwork.objects.filter(slug=slug, status=ArtworkStatus.PUBLISHED).first()
+        if artwork is None:
+            raise Http404
+        token = request.COOKIES.get("af_visitor")
+        issued = token is None
+        if issued:
+            token = secrets.token_hex(16)
+        viewer_key = hashlib.sha256(token.encode()).hexdigest()[:32]
+        seen = ArtworkView.objects.filter(
+            artwork=artwork,
+            viewer_key=viewer_key,
+            created_at__gte=timezone.now() - timedelta(hours=24),
+        ).exists()
+        if seen:
+            return Response({"view_count": artwork.view_count, "counted": False})
+        ArtworkView.objects.create(artwork=artwork, viewer_key=viewer_key)
+        Artwork.objects.filter(pk=artwork.pk).update(view_count=F("view_count") + 1)
+        artwork.refresh_from_db(fields=["view_count"])
+        resp = Response({"view_count": artwork.view_count, "counted": True})
+        if issued:
+            resp.set_cookie(
+                "af_visitor",
+                token,
+                max_age=31_536_000,
+                httponly=True,
+                samesite="Lax",
+                secure=request.is_secure(),
+            )
+        return resp
 
 
 class CatalogCategoryList(generics.ListAPIView):

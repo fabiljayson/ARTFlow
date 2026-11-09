@@ -13,6 +13,11 @@ urlpatterns = [
         name="catalog-artwork-similar",
     ),
     path(
+        "catalog/artworks/<slug:slug>/view/",
+        views.ArtworkViewTrack.as_view(),
+        name="catalog-artwork-view",
+    ),
+    path(
         "catalog/artworks/<slug:slug>/media/<int:media_id>/<str:variant>/",
         views.ArtworkMediaStream.as_view(),
         name="catalog-artwork-media-variant",
