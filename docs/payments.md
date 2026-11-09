@@ -60,6 +60,10 @@ Webhook signé            Polling secours
 5. `external_reference` = notre `payment.uuid` → corrélé sans ambiguïté.
 6. Secrets : `CAMPAY_USERNAME`, `CAMPAY_PASSWORD` (ou `CAMPAY_APP_TOKEN`), `CAMPAY_WEBHOOK_SECRET` en variables d'env, jamais en base ni en git.
 
+> **Vérifié (D3, 2026-11-09)** : règles 1-5 exercées de bout en bout par la suite pytest
+> payments/commerce et `smoke_d3.py` (76/76) — rejeu 200 `duplicate: true`, montant ≠ 409,
+> transitions illégales 409, aucune confirmation sur redirection.
+
 ### 2.2 Machine à états paiement
 ```
 CREATED → PENDING → SUCCEEDED
@@ -99,6 +103,13 @@ Tests obligatoires : table de vérité sur 20 cas (0, 1, 999, 1000, 3333, 999999
 
 ## 5. MockPaymentGateway (dev/CI)
 
+- [x] **Réalisé (D3)** — simulateur de scénarios + webhook HMAC réel exerçant le code de
+  vérification ; parcours validé par `smoke_d3.py` (**76/76**, 2026-11-09) : `success`,
+  `fail`, `webhook_lost_then_late` (+ `poll_pending_payments`), rejeu → 200
+  `duplicate: true`, montant erroné → 409, signature altérée → 403.
+- **Schéma de signature retenu** : en-tête `X-ArtFlow-Signature: sha256=<hex HMAC-SHA256
+  (corps brut, PAYMENT_WEBHOOK_SECRET)>` — secret en variable d'env (défaut dev
+  `artflow-dev-webhook-secret`), jamais en base ni en git.
 - Endpoints internes de test : simulateur avec scénarios paramétrables (`success`, `fail`, `timeout`, `webhook_lost_then_late`, `duplicate_webhook`).
 - Signature factée mais **réelle** (HMAC) pour exercer le code de vérification.
 - Aucune dépendance réseau → CI déterministe.
