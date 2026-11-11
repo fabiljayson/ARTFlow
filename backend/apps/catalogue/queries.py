@@ -4,7 +4,7 @@ from django.db.models import Count, F, IntegerField, OuterRef, Subquery, Sum, Va
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
-from apps.catalogue.models import Artwork, ArtworkStatus, ArtworkView, Favorite
+from apps.catalogue.models import ArtworkStatus, ArtworkView, Favorite
 from apps.commerce.models import OrderItem
 
 PAID_ORDER_STATUSES = ("PAID", "PROCESSING", "SHIPPED", "DELIVERED", "PARTIALLY_REFUNDED")
